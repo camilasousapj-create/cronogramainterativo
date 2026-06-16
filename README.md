@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TCE-SC 2026 — Cronograma Discursiva</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --az1:#1F3864;--az2:#2E5FA3;--az3:#4A7FC1;--az-light:#D6E4F7;--az-xlight:#EBF5FB;
+  --gr1:#145A32;--gr2:#1E7E34;--gr-light:#E8F5E9;
+  --roxo:#4A235A;--roxo-light:#F3E5F5;
+  --laranja:#784212;--laranja-light:#FEF9E7;
+  --am:#7D6608;--am-light:#FFF9C4;
+  --vm:#C0392B;--vm-light:#FDECEA;
+  --cinza:#64748B;--border:#E2E8F0;
+  --bg:#F8FAFC;--surface:#FFFFFF;--text:#1E293B;--text2:#64748B;
+  --radius:10px;--radius-sm:6px;--shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:14px;color:var(--text);background:var(--bg);min-height:100vh}
+/* HEADER */
+.app-bar{background:var(--az1);color:#fff;padding:0 1.5rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.app-bar-left{display:flex;align-items:center;gap:.75rem}
+.app-bar-logo{width:36px;height:36px;background:var(--az2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0}
+.app-bar-title h1{font-size:15px;font-weight:600;line-height:1.2}
+.app-bar-title p{font-size:11px;opacity:.7;margin-top:1px}
+.save-chip{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.12);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:500;cursor:default;user-select:none}
+.save-dot{width:7px;height:7px;border-radius:50%;background:#4CAF50;flex-shrink:0;transition:background .3s}
+.save-dot.saving{background:#FFC107;animation:pulse .9s ease-in-out infinite}
+.save-dot.error{background:#f44336}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+/* LAYOUT */
+.layout{display:flex;min-height:calc(100vh - 60px)}
+/* SIDEBAR */
+.sidebar{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:1rem 0;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto}
+.sidebar-section{padding:.25rem .75rem;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-top:.75rem}
+.sidebar-item{display:flex;align-items:center;gap:.5rem;padding:.5rem .75rem;font-size:12.5px;cursor:pointer;border-radius:0;color:var(--text);transition:background .12s;border-left:3px solid transparent}
+.sidebar-item:hover{background:#F1F5F9}
+.sidebar-item.active{background:var(--az-xlight);color:var(--az2);border-left-color:var(--az2);font-weight:600}
+.sidebar-item i{font-size:15px;width:18px;flex-shrink:0}
+.sidebar-progress{height:3px;background:#E2E8F0;margin:.15rem .75rem .5rem 2.5rem;border-radius:10px;overflow:hidden}
+.sidebar-progress-fill{height:100%;border-radius:10px;transition:.4s}
+/* MAIN */
+.main{flex:1;padding:1.5rem;max-width:960px;min-width:0}
+/* CARDS */
+.page{display:none}.page.active{display:block}
+.section-header{margin-bottom:1.25rem}
+.section-header h2{font-size:20px;font-weight:700;color:var(--az1)}
+.section-header p{font-size:13px;color:var(--text2);margin-top:3px}
+/* SEMANA CARD */
+.semana-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:1rem;box-shadow:var(--shadow);overflow:hidden}
+.semana-head{display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;cursor:pointer;user-select:none;background:var(--az1);color:#fff;transition:background .15s}
+.semana-head:hover{background:#28467A}
+.semana-head-num{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.semana-head-info{flex:1;min-width:0}
+.semana-head-info h3{font-size:13.5px;font-weight:600;line-height:1.3}
+.semana-head-info p{font-size:11px;opacity:.75;margin-top:1px}
+.semana-head-right{display:flex;align-items:center;gap:.5rem;flex-shrink:0}
+.progress-ring-wrap{position:relative;width:38px;height:38px}
+.progress-ring-wrap svg{transform:rotate(-90deg)}
+.progress-ring-bg{fill:none;stroke:rgba(255,255,255,.2);stroke-width:3}
+.progress-ring-fill{fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset .5s ease}
+.progress-ring-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff}
+.chevron-icon{font-size:16px;transition:transform .25s;opacity:.8}
+.semana-head.open .chevron-icon{transform:rotate(180deg)}
+.semana-body{display:none;padding:0}
+.semana-body.open{display:block}
+/* FOCO BAR */
+.foco-bar{display:flex;gap:.5rem;padding:.65rem 1rem;background:var(--az-light);border-bottom:1px solid #C5D9F0;align-items:flex-start;font-size:12px;color:var(--az1)}
+.foco-bar i{flex-shrink:0;font-size:14px;margin-top:1px;color:var(--az2)}
+/* OBSERVAÇÕES */
+.obs-row{padding:.5rem 1rem;background:#FAFBFC;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:.5rem}
+.obs-row i{font-size:14px;color:var(--text2);margin-top:4px;flex-shrink:0}
+.obs-row textarea{flex:1;border:1px solid var(--border);border-radius:var(--radius-sm);padding:5px 8px;font-size:12px;resize:vertical;min-height:38px;max-height:120px;font-family:inherit;color:var(--text);background:#fff;line-height:1.4}
+.obs-row textarea:focus{outline:none;border-color:var(--az2)}
+.obs-row label{font-size:10px;color:var(--text2);flex-shrink:0;padding-top:6px;white-space:nowrap;font-weight:500}
+/* BLOCO HEADER */
+.bloco-header{padding:.4rem 1rem;background:#F8FAFC;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.4rem}
+.bloco-header span{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.bloco-header i{font-size:13px}
+.bloco-CE .bloco-header{background:#EBF5FB;border-bottom-color:#C5D9F0}
+.bloco-CE .bloco-header span,.bloco-CE .bloco-header i{color:var(--az2)}
+.bloco-DIR .bloco-header{background:#E8F5E9;border-bottom-color:#C3E6CB}
+.bloco-DIR .bloco-header span,.bloco-DIR .bloco-header i{color:var(--gr2)}
+.bloco-QT .bloco-header{background:#F3E5F5;border-bottom-color:#D6B4E0}
+.bloco-QT .bloco-header span,.bloco-QT .bloco-header i{color:var(--roxo)}
+.bloco-PT .bloco-header{background:var(--laranja-light);border-bottom-color:#FDDCAB}
+.bloco-PT .bloco-header span,.bloco-PT .bloco-header i{color:var(--laranja)}
+.bloco-SIM .bloco-header{background:#FFF3CD;border-bottom-color:#FFE69C}
+.bloco-SIM .bloco-header span,.bloco-SIM .bloco-header i{color:#7D5A00}
+.bloco-MINI .bloco-header{background:var(--am-light);border-bottom-color:#FFE082}
+.bloco-MINI .bloco-header span,.bloco-MINI .bloco-header i{color:var(--am)}
+/* TAREFA ROW */
+.tarefa{display:grid;grid-template-columns:36px 90px 1fr 148px;gap:0;border-bottom:1px solid var(--border);transition:background .12s;align-items:stretch}
+.tarefa.done{background:#F0FDF4}
+.tarefa-cb{display:flex;align-items:flex-start;justify-content:center;padding:.75rem .5rem;border-right:1px solid var(--border)}
+.tarefa-cb input[type=checkbox]{width:16px;height:16px;accent-color:var(--gr2);cursor:pointer;margin-top:2px}
+.tarefa-tipo{display:flex;align-items:flex-start;justify-content:center;padding:.65rem .4rem;border-right:1px solid var(--border)}
+.tipo-pill{font-size:9.5px;font-weight:700;padding:3px 6px;border-radius:20px;text-align:center;line-height:1.3;letter-spacing:.02em;white-space:nowrap}
+.tp-ESTUDO{background:#DBEAFE;color:#1D4ED8}
+.tp-REV{background:#D1FAE5;color:#065F46}
+.tp-REV-FINAL{background:#BBF7D0;color:#14532D}
+.tp-REV-VESPERA{background:#BBF7D0;color:#14532D}
+.tp-QUESTAO-TREINO{background:#EDE9FE;color:#5B21B6}
+.tp-PECA-TECNICA-APOSTADA{background:#FEF3C7;color:#92400E}
+.tp-SIMULADO-LIVRE{background:#E0F2FE;color:#0369A1}
+.tp-SIMULADO-GERAL{background:#FEE2E2;color:#991B1B}
+.tp-MINI-REVISAO{background:#FEF9C3;color:#713F12}
+.tarefa-info{padding:.65rem .75rem;min-width:0}
+.tarefa-mat{font-size:10.5px;color:var(--text2);margin-bottom:2px;font-style:italic}
+.tarefa-top{font-size:12.5px;font-weight:600;color:var(--az1);line-height:1.35}
+
+.tarefa-det-inline{font-size:11.5px;color:var(--text2);line-height:1.55;margin-top:5px;background:#F8FAFC;border-left:3px solid var(--az-light);padding:.4rem .55rem .4rem .65rem;border-radius:0 var(--radius-sm) var(--radius-sm) 0}
+.tarefa-nota{padding:.65rem .6rem;border-left:1px solid var(--border);display:flex;flex-direction:column;gap:4px;justify-content:flex-start}
+.nota-label{font-size:9.5px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.nota-sel{font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:#fff;color:var(--text);cursor:pointer;font-family:inherit;width:100%}
+.nota-sel:focus{outline:none;border-color:var(--az2)}
+.nota-pill{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;margin-top:2px}
+.np-otimo{background:#D1FAE5;color:#065F46}
+.np-bom{background:#DBEAFE;color:#1D4ED8}
+.np-regular{background:#FEF3C7;color:#92400E}
+.np-ruim{background:#FEE2E2;color:#991B1B}
+/* ALERTAS */
+.alertas-wrap{padding:.5rem .75rem .5rem;background:#FAFBFC;border-bottom:1px solid var(--border)}
+.alerta{display:flex;align-items:flex-start;gap:.4rem;padding:.3rem .5rem;border-radius:var(--radius-sm);margin-bottom:.3rem;font-size:11.5px;font-weight:500;border-left:3px solid}
+.alerta:last-child{margin-bottom:0}
+.alerta i{flex-shrink:0;font-size:13px;margin-top:1px}
+.al-red{background:var(--vm-light);color:var(--vm);border-color:var(--vm)}
+.al-yellow{background:var(--am-light);color:var(--am);border-color:var(--am)}
+.al-green{background:var(--gr-light);color:var(--gr2);border-color:var(--gr2)}
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:1.25rem}
+.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.125rem;box-shadow:var(--shadow)}
+.metric-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:.6rem;font-size:18px}
+.metric-label{font-size:11px;color:var(--text2);font-weight:500;margin-bottom:2px}
+.metric-val{font-size:26px;font-weight:700;color:var(--text);line-height:1}
+.metric-sub{font-size:11px;color:var(--text2);margin-top:3px}
+.mi-blue{background:var(--az-xlight);color:var(--az2)}
+.mi-green{background:var(--gr-light);color:var(--gr2)}
+.mi-purple{background:var(--roxo-light);color:var(--roxo)}
+.mi-amber{background:var(--am-light);color:var(--am)}
+/* PROG CARD */
+.prog-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.125rem;margin-bottom:1rem;box-shadow:var(--shadow)}
+.prog-card h3{font-size:13px;font-weight:700;color:var(--text);margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem}
+.prog-card h3 i{font-size:15px;color:var(--text2)}
+.prog-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.prog-label{width:76px;font-size:11.5px;color:var(--text2);flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prog-bar-bg{flex:1;background:#E2E8F0;border-radius:10px;height:8px;overflow:hidden}
+.prog-bar-fill{height:100%;border-radius:10px;transition:.5s}
+.prog-pct{width:32px;font-size:11.5px;font-weight:600;text-align:right}
+.dist-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem}
+.dist-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.6rem .75rem;display:flex;align-items:center;gap:.6rem}
+.dist-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.dist-lbl{font-size:12px;color:var(--text2);flex:1}
+.dist-n{font-size:16px;font-weight:700}
+.ct-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.ct-lbl{width:52px;font-size:11px;font-weight:700;color:var(--text);flex-shrink:0}
+.ct-info{flex:1;min-width:0}
+.ct-name{font-size:10.5px;color:var(--text2);margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ct-bar-bg{background:#E2E8F0;border-radius:10px;height:5px;overflow:hidden}
+.ct-bar-fill{height:100%;border-radius:10px;transition:.5s}
+.ct-pct{width:30px;font-size:11px;font-weight:600;text-align:right}
+/* BOTÕES */
+.btn-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:7px 14px;border-radius:var(--radius-sm);font-size:12.5px;font-weight:600;cursor:pointer;border:1px solid;transition:.15s;font-family:inherit}
+.btn-primary{background:var(--az2);color:#fff;border-color:var(--az2)}
+.btn-primary:hover{background:var(--az1);border-color:var(--az1)}
+.btn-outline{background:#fff;color:var(--text);border-color:var(--border)}
+.btn-outline:hover{background:#F1F5F9}
+.btn-danger{background:#fff;color:var(--vm);border-color:#FECACA}
+.btn-danger:hover{background:var(--vm-light)}
+/* TOAST */
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--az1);color:#fff;padding:9px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s;pointer-events:none;z-index:999;box-shadow:var(--shadow-md)}
+#toast.show{opacity:1;transform:none}
+/* LOADING */
+#loading-screen{position:fixed;inset:0;background:var(--az1);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:1rem}
+#loading-screen .loader-logo{font-size:42px;font-weight:800;color:#fff;letter-spacing:-1px}
+#loading-screen .loader-sub{font-size:13px;color:rgba(255,255,255,.6);margin-top:-4px}
+.spinner-lg{width:36px;height:36px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-top:.5rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* UTIL */
+.badge-count{display:inline-flex;align-items:center;justify-content:center;background:var(--az2);color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:10px;padding:0 5px}
+/* SEMANA VESPERA */
+.semana-vespera .semana-head{background:var(--vm)}
+.semana-vespera .semana-head:hover{background:#A93226}
+/* SCROLL */
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:4px}
+/* CHARTS */
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.125rem;margin-bottom:1rem;box-shadow:var(--shadow)}
+.chart-card h3{font-size:13px;font-weight:700;color:var(--text);margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem}
+.chart-card h3 i{font-size:15px;color:var(--text2)}
+.chart-wrap{position:relative;width:100%}
+.chart-legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:.6rem;font-size:11.5px;color:var(--text2)}
+.chart-legend-item{display:flex;align-items:center;gap:4px}
+.chart-legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.dash-two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:0}
+@media(max-width:650px){.dash-two-col{grid-template-columns:1fr}}
+/* RESPONSIVE */
+@media(max-width:700px){
+  .sidebar{display:none}
+  .tarefa{grid-template-columns:32px 80px 1fr}
+  .tarefa-nota{display:none}
+}
+</style>
+</head>
+<body>
+
+<div id="loading-screen">
+  <div class="loader-logo">TCE-SC</div>
+  <div class="loader-sub">Cronograma Estratégico · Discursiva 2026</div>
+  <div class="spinner-lg"></div>
+</div>
+
+<header class="app-bar">
+  <div class="app-bar-left">
+    <div class="app-bar-logo">TC</div>
+    <div class="app-bar-title">
+      <h1>TCE-SC 2026 · Cronograma Discursiva</h1>
+      <p>Auditor Fiscal de Controle Externo · Área Direito · Prova: 9 de agosto de 2026</p>
+    </div>
+  </div>
+  <div class="save-chip" id="saveChip">
+    <div class="save-dot" id="saveDot"></div>
+    <span id="saveText">Carregando...</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <main class="main">
+    <div id="page-checklist" class="page active"></div>
+    <div id="page-dashboard" class="page">
+      <div class="section-header">
+        <h2>Dashboard de desempenho</h2>
+        <p>Visão geral do progresso e desempenho por semana e por eixo temático FGV</p>
+      </div>
+      <div id="dash-content"></div>
+    </div>
+  </main>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'tcesc2026_prog_v3';
+const DATA = [{"titulo":"SEMANA 1 — 15/06 (dom) a 21/06 (sáb)","foco":"Cobrir lacunas críticas CT-04 (Improbidade/Lei 14.230/21), CT-09 (MS contra TC) e CT-07 (Lei 13.019/2014). Iniciar ciclo semanal de prática discursiva.","tarefas":[{"n":"T.01","tipo":"REV","mat":"Controle Externo da Adm. Pública","top":"5 Lei nº 8.429/1992 e suas alterações; 11 Tribunal de Contas do Estado de Santa Catarina: 11.1 Natureza, competência, jurisdição e organização","det":"Revisão: art. 71 CF (incisos I–IX); arts. 1º, 5º, 6º LC 202/2000. Contas de governo x gestão. Extensão da jurisdição sobre OS/entidades privadas (critério do recurso público — ADI 1923). Competência TC x Câmara Municipal."},{"n":"T.02","tipo":"REV","mat":"Legislação Aplicável ao TCE-SC","top":"1. Lei Orgânica do TCE-SC (LC nº 202/2000) – art. 32 (Tomada de Contas Especial)","det":"Revisão: hipóteses de instauração de TCE; instauração direta de ofício pelo TC; art. 32 LC 202/2000; conversão de processo; citação; prazo de defesa (15 dias). Due process na TCE."},{"n":"T.03","tipo":"REV","mat":"Controle Externo da Adm. Pública","top":"8 Controle da atividade financeira do Estado; 9 Controle pelos tribunais de contas: 9.1 a 9.3 tipos e formas; ISSAIs 100 e 400","det":"Revisão: modelos de controle (tribunal, ombudsman, parlamentar); controle preventivo/concomitante/subsequente; diferença controle interno x externo; ISSAIs 100 e 400; NBASP 100; accountability e governança."},{"n":"T.04","tipo":"REV","mat":"Legislação Aplicável ao TCE-SC","top":"5 Governança e integridade institucional: 5.2 Código de Ética e Conduta – Resolução N. TC-0252/2024; 5.3 Política de Gestão e Controle da Disciplina – Resolução N. TC-302/2026","det":"Leitura seca e revisão: princípios, vedações, obrigações dos servidores; competência da Comissão de Ética; sanções disciplinares; Resolução TC-254/2024 (Política de Assédio). Cobrado na objetiva TCE-SC 2026."},{"n":"T.05","tipo":"ESTUDO","mat":"Legislação Aplicável ao TCE-SC","top":"Legislação Aplicada ao Terceiro Setor: 10.1 Lei nº 9.637/1998 (OS); 10.2 Lei nº 9.790/1999 (OSCIP); 10.3 Lei nº 13.019/2014 (OSC/MROSC); 10.4 Lei nº 12.527/2011 (LAI); 10.5 Decreto estadual nº 733/2024","det":"ESTUDO: distinção OS x OSCIP x OSC; qualificação; contrato de gestão x Termo de Fomento x Colaboração; prestação de contas ao TC; jurisdição TC sobre entidades privadas (ADI 1923); LAI aplicada ao Tribunal; regime de acesso e sigilo."},{"n":"T.06","tipo":"ESTUDO","mat":"Direito Administrativo","top":"10 Controle da Administração Pública: 10.4 Improbidade administrativa: Lei nº 8.429/1992 e suas alterações (Lei 14.230/2021)","det":"ESTUDO PRIORITÁRIO: dolo específico (art. 1º §1º Lei 14.230/21); atos de improbidade (arts. 9, 10, 11); sanções (art. 12); prescrição (art. 23); ANPC – acordo de não persecução cível; diferença TC x ação de improbidade; natureza da decisão do TC; conexão com LINDB arts. 20–28."},{"n":"T.07","tipo":"REV","mat":"Direito Administrativo","top":"18 Lei de introdução às normas do Direito Brasileiro – LINDB: arts. 20 a 30 (segurança jurídica, boa-fé, proteção da confiança legítima)","det":"Revisão sistema LINDB+Improbidade: consequencialismo (art. 20); motivação de decisões (art. 21); modulação de efeitos (art. 23); boa-fé e confiança legítima (arts. 24–25); regime de transição (art. 26); responsabilidade do parecerista jurídico – erro grosseiro (art. 28). STF: RE 1.293.558."},{"n":"T.08","tipo":"ESTUDO","mat":"Direito Constitucional","top":"3. Ações Constitucionais: 11.1 Mandado de segurança individual e coletivo (Lei 12.016/2009)","det":"ESTUDO LACUNA CRÍTICA: MS contra atos do TC – competência originária (TJ x STJ x STF); efeitos suspensivos; liminar e suspensão de decisão cautelar do TC; reserva de plenário (art. 97 CF + Súmula Vinculante 10); Cláusula Full Bench; diferença MS x ação rescisória; controle difuso de constitucionalidade no julgamento do MS."},{"n":"T.09","tipo":"ESTUDO","mat":"Direito Constitucional","top":"3. Ações Constitucionais: controle de constitucionalidade – action direta de inconstitucionalidade, ação declaratória de constitucionalidade, arguição de descumprimento de preceito fundamental","det":"ESTUDO: ADI (legitimados, efeitos erga omnes e vinculante, modulação de efeitos); ADC; ADPF (subsidiariedade); controle de norma municipal (via ADPF); Súmula 347 STF e sua superação pelos TCs; controle difuso x concentrado; repercussão geral."},{"n":"T.10","tipo":"REV","mat":"Direito Administrativo","top":"3 Ato administrativo: 3.1 Conceito, requisitos, atributos, classificação e espécies; 3.2 Extinção: cassação, anulação, revogação e convalidação; 3.3 Decadência administrativa","det":"Revisão: elements do ato (competência, finalidade, forma, motivo, objeto); vícios de competência (convalidável) e desvio de finalidade (insanável); decadência administrativa (art. 54 Lei 9.784/99); convalidação e anulação de ofício."},{"n":"T.11","tipo":"REV","mat":"Direito Administrativo","top":"5 Poderes da administração pública: 5.1 Hierárquico, disciplinar, regulamentar e de polícia; 5.2 Uso e abuso do poder","det":"Revisão: delegabilidade do Poder de Polícia a estatais (Tema 532 STF); ciclo do Poder de Polícia; excesso vs. desvio de poder; discricionariedade e vinculação; poder regulamentar e limites do decreto autônomo."},{"n":"T.12","tipo":"REV","mat":"Auditoria Governamental, Compliance e Gestão de Risco e Governança","top":"6 Evidências: 6.1 Caracterização de achados de auditoria (NBASP 100); 6.2 Matrizes de achados e matriz de responsabilização","det":"Revisão: atributos do achado (situação, critério, causa, consequência); tipos de evidência; materialidade, risco e relevância (4.3); culpabilidade; nexo causal; papéis de trabalho (4.9); testes de auditoria (4.10); amostragem (4.11)."},{"n":"T.13","tipo":"QUESTÃO TREINO","mat":"Direito Administrativo / Controle Externo","top":"10.4 Improbidade administrativa (Lei 14.230/21) + Legislação TCE-SC: jurisdição e competência do TC","det":"🎯 APOSTA ALTA: Caso prático (30 linhas, itens a/b/c): (a) Gestor desviou recursos transferidos por convênio federal a Município – diferencie ação de improbidade (dolo específico, art. 1º §1º) da TCE instaurada pelo TC; (b) qual a natureza jurídica da decisão do TC e seu efeito sobre eventual ação de improbidade em curso?; (c) pode o MP de Contas propor ação de improbidade? Fundamente em legislação e jurisprudência."},{"n":"T.14","tipo":"QUESTÃO TREINO","mat":"Direito Constitucional / Controle Externo","top":"3. Ações Constitucionais: 11.1 Mandado de segurança + Controle Externo da Adm. Pública: 11 Tribunal de Contas","det":"🎯 APOSTA ALTA: (30 linhas, itens a/b/c): (a) Prefeito impetrou MS contra decisão liminar do TC que suspendeu contrato de concessão de obra pública – qual o órgão competente?; (b) Cabe liminar? Aplica-se reserva de plenário ao julgamento do MS?; (c) o TCE pode exercer controle de constitucionalidade de lei municipal ao julgar contratos? Analise à luz da Súmula 347 STF e sua superação."},{"n":"T.15","tipo":"QUESTÃO TREINO","mat":"Legislação Aplicável ao TCE-SC","top":"Terceiro setor: 10.1 Lei nº 9.637/1998 (OS); 10.3 Lei nº 13.019/2014 (OSC) + 1. LC nº 202/2000 (art. 32)","det":"🎯 APOSTA MÉDIA-ALTA: (30 linhas, itens a/b/c): (a) Diferenças entre OS (Lei 9.637/98) e OSC (Lei 13.019/14): qualificação, instrumentos jurídicos e controle; (b) Município repassa recurso do FUS a OSC sem termo de fomento – o TC pode fiscalizar diretamente a OSC?; (c) constatada irregularidade grave, qual o caminho processual no TCE-SC até a TCE (art. 32 LC 202/2000)?"},{"n":"T.16","tipo":"QUESTÃO TREINO","mat":"Auditoria Governamental / LINDB / Direito Administrativo","top":"6.1 Caracterização de achados + 18 LINDB arts. 20–28 + 10.4 Improbidade","det":"🎯 APOSTA MÉDIA: (30 linhas, itens a/b/c): (a) Auditor lavra achado de auditoria por pagamento antieconômico em OS – quais os atributos do achado segundo NBASP 100?; (b) O gestor invoca o art. 28 LINDB para se eximir de responsabilidade por ter seguido parecer jurídico – procede?; (c) Como o TCE-SC deve tratar o tema da culpabilidade na matriz de responsabilização?"},{"n":"T.17","tipo":"PEÇA TÉCNICA APOSTADA","mat":"Controle Externo + Terceiro Setor + Improbidade + LINDB","top":"Art. 71 CF; art. 32 LC 202/2000; Lei 9.637/98; Lei 13.019/14; Lei 8.429/92 (Lei 14.230/21); LINDB arts. 20–28; ISSAIs 100 e 400; NBASP 100","det":"🎯 APOSTA CERTEIRA (60 linhas): Instrução processual no TCE-SC – Município celebrou contrato de gestão com OS que recebeu R$3M sem licitação e sem prestação de contas. TC instaurou processo ex officio. Elabore Voto/Nota de Auditoria com: (1) jurisdição do TC sobre OS (ADI 1923); (2) achado de auditoria estruturado (situação-critério-causa-consequência-NBASP 100); (3) instauração de TCE (art. 32 LC 202/2000); (4) responsabilidade do prefeito por omissão fiscalizatória (improbidade? – dolo específico art. 1º §1º Lei 14.230/21 + art. 28 LINDB); (5) dispositivo com prazo de defesa."},{"n":"T.18","tipo":"SIMULADO LIVRE","mat":"— Conforme liberação do cursinho —","top":"Questão discursiva e/ou peça técnica conforme material do cursinho","det":"Realizar quando o cursinho liberar. Sem tema fixo. Anotar tema realizado e incluir nos alertas da próxima semana."},{"n":"T.19","tipo":"MINI REVISÃO","mat":"Todos os tópicos da semana","top":"Revisão \"Aposta Quente\" — sábado 21/06","det":"📌 Tópico 1 — D. Adm 10.4: Dolo específico da improbidade – art. 1º §1º Lei 14.230/21 (diferença do regime anterior). 📌 Tópico 2 — D. Const: Reserva de plenário – SV 10 e consequências de violação. 📌 Tópico 3 — Leg. TCE-SC 10.3: Lei 13.019/2014 – Termo de Fomento x Colaboração x Parceria. 📌 Tópico 4 — Controle Externo: art. 32 LC 202/2000 – TCE direta (hipóteses e prazo de defesa). 📌 Tópico 5 — Auditoria 6.1: Atributos do achado – situação, critério, causa, consequência."}],"alertas":["🔴 [LACUNA CRÍTICA — CT-04] Dolo específico Lei 14.230/21 coberto pela primeira vez nesta semana.","🔴 [LACUNA CRÍTICA — CT-09] MS contra atos do TC coberto pela primeira vez nesta semana.","🟡 [ATENÇÃO — CT-07] Lei 13.019/2014 (OSC) abordada nesta semana. Retorno em 10 dias (Semana 2).","🟢 [PEÇA APOSTADA] Tema central: OS + TCE direta + responsabilidade gestor. Altíssima probabilidade FGV.","⏱ [STATUS] Faltam 7 semanas. 3 de 8 lacunas críticas (CT-04, CT-09, CT-07) sanadas nesta semana."]},{"titulo":"SEMANA 2 — 22/06 (dom) a 28/06 (sáb)","foco":"Cobrir CT-13 (Reforma Tributária EC 132/2023 + LC 214/2025) e CT-20 (Previdenciário RPPS/RGPS). Consolidar coisa julgada e aprofundar licitações.","tarefas":[{"n":"T.01","tipo":"REV","mat":"Controle Externo da Adm. Pública","top":"11 Tribunal de Contas do Estado de Santa Catarina: 11.1 Natureza, competência, jurisdição e organização; 13 Lei Complementar nº 202/2000 (Lei Orgânica TCE-SC)","det":"Revisão ciclo 2 (intervalo < 10 dias): art. 71 CF incisos I–IX; contas de governo x gestão; Tema 835 STF (Prefeito ordenador de despesa); parecer prévio; competência para julgar MS contra TC estadual."},{"n":"T.02","tipo":"REV","mat":"Legislação Aplicável ao TCE-SC","top":"1. LC nº 202/2000: arts. 32 e 39 (TCE e execução); 2. Regimento Interno – Resolução N. TC-06/2001: ritos de julgamento","det":"Revisão: prazos recursais LC 202/2000 – recurso de reexame (30 dias), embargos de declaração (10 dias), recurso de revisão; decisões do TCE-SC como título executivo extrajudicial; encaminhamento ao MP de Contas para execução fiscal; vedação de autoexecutar."},{"n":"T.03","tipo":"ESTUDO","mat":"Direito Administrativo / Legislação Específica TCE-SC","top":"11 Reforma Tributária: 11.1 CF arts. 145 a 162; 11.3 Emenda Constitucional nº 132/2023; 11.4 Lei Complementar nº 214/2025","det":"ESTUDO LACUNA CRÍTICA (CT-13): IBS (Imposto sobre Bens e Serviços): natureza, fato gerador, base de cálculo, alíquota de destino, não cumulatividade plena; CBS; IS (Imposto Seletivo); estrutura do Comitê Gestor do IBS; regras de transição (2026–2033); papel do TC no controle da implementação tributária; competência compartilhada."},{"n":"T.04","tipo":"ESTUDO","mat":"Direito Previdenciário","top":"1 Seguridade Social: 1.1 Conceito, organização e princípios constitucionais; 2 Regimes Previdenciários: 2.1 RGPS (aspectos GERAIS); 2.2 RPPS: 2.2.1 ECs 20/1998, 41/2003, 47/2005, 70/2012 e 103/2019; 2.2.2 Princípio da contributividade; 2.2.3 Equilíbrio financeiro e atuarial; 2.2.4 Solidariedade; 2.2.5 Lei Federal 9.717/1998; 2.3 Lei Federal 9.796/1999","det":"ESTUDO LACUNA CRÍTICA (CT-20): RPPS – critérios de aposentadoria pós-EC 103/2019; tipos (invalidez, compulsória, voluntária); pensão por morte; previdência complementar do servidor; LC Estadual 412/2008 (FUNPREV-SC); Certificado de Regularidade Previdenciária (CRP); DRAA; controle atuarial pelo TC; vedação de novos RPPS (EC 103/2019)."},{"n":"T.05","tipo":"REV","mat":"Legislação Aplicável ao TCE-SC","top":"10.3 Lei nº 13.019/2014 (OSC) – retorno 10 dias; 10.1 Lei nº 9.637/1998 (OS)","det":"Revisão CT-07 (retorno obrigatório ≤ 10 dias): distinção OS x OSCIP x OSC; Termo de Fomento x Colaboração; MROSC; prestação de contas ao TC; ADI 1923 (jurisdição TC sobre entidades OS); fiscalização pelo TC de parceria com OSC."},{"n":"T.06","tipo":"REV","mat":"Direito Administrativo","top":"10.4 Improbidade administrativa: Lei nº 8.429/1992 e suas alterações (Lei 14.230/2021) + 18 LINDB arts. 20–28","det":"Revisão sistema CT-04+CT-17 (retorno ≤ 10 dias): dolo específico; atos de improbidade (arts. 9/10/11); rol de sanções (art. 12); ANPC; prescrição (art. 23); lei anticorrupção (Lei 12.846/2013) – acordo de leniência x ANPC; art. 28 LINDB (pareceristas); consequencialismo."},{"n":"T.07","tipo":"ESTUDO","mat":"Direito Processual Civil","top":"5. Formação, Suspensão e Extinção do Processo: 5.4 Coisa julgada; 5.5 Relativização da coisa julgada; 14. Ação Rescisória: 14.1 Cabimento; 14.2 Prazo; 14.3 Legitimidade; 14.4 Procedimento","det":"ESTUDO (CT-06 lacuna parcial): coisa julgada formal x material; limites objetivos (arts. 502–504 CPC); limites subjetivos (art. 506); questão prejudicial (art. 503 §1º); relativização; coisa julgada inconstitucional; ação rescisória como sucedâneo em face de decisão do TC; MS como sucedâneo alternativo."},{"n":"T.08","tipo":"REV","mat":"Direito Administrativo","top":"12 Licitações e contratos administrativos: 12.1.1 Lei nº 14.133/2021 – Dos Contratos (arts. 89–154)","det":"Revisão CT-03: equilíbrio econômico-financeiro – reajuste x revisão x repactuação; matriz de risco e alocação de riscos; álea ordinária x extraordinária; limites de alteração (25%/50%); cláusula de retomada (step-in); extinção contratual (arts. 137–139); prorrogação."},{"n":"T.09","tipo":"ESTUDO","mat":"Direito Financeiro","top":"2 Despesa pública: 2.1 Conceito e classificação; 2.2 Disciplina constitucional dos precatórios (art. 100 CF); 9 Lei Complementar nº 101/2000 (LRF): arts. 18–22 (despesas com pessoal)","det":"ESTUDO CT-11: limites de pessoal (arts. 19–20 LRF); EC 109/2021; art. 29-A CF (Câmara Municipal); RCL – o que entra no cômputo; vedações do art. 22 (limite prudencial); art. 42 LRF (assunção de obrigação nos últimos 2 quadrimestres); restos a pagar; controle do TC."},{"n":"T.10","tipo":"ESTUDO","mat":"Direito Constitucional","top":"2.5 Poder Legislativo: 2.5.4 Fiscalização contábil, financeira e orçamentária; 2.8 Das Finanças Públicas: 2.8.2 Dos Orçamentos","det":"ESTUDO CT-12: contas do Governador – papel do TC (parecer prévio); julgamento político pela AL (quórum de 2/3 para rejeitar); deliberações possíveis; inércia do TC e STF (RE 848826 – ADPF 36); créditos adicionais (suplementar, especial, extraordinário)."},{"n":"T.11","tipo":"REV","mat":"Direito Constitucional","top":"3. Ações Constitucionais: 11.1 Mandado de segurança; controle de constitucionalidade (ADI, ADC, ADPF)","det":"Revisão CT-09 (retorno ≤ 10 dias): competência para MS contra TC; SV 10 (reserva de plenário); Súmula 347 e sua superação; ADPF para controle de norma municipal; efeito vinculante; modulação de efeitos; medida cautelar em ADI vs. suspensão no MS."},{"n":"T.12","tipo":"REV","mat":"Auditoria Governamental, Compliance e Gestão de Risco e Governança","top":"12 Governança: 12.1 Papel e importância; 12.2 Governança, transparência e accountability; 12.4 Princípios da governança pública; 11 Normas de auditoria: 11.1 INTOSAI (ISSAIs 200, 300, 3000); 11.2 NBASP","det":"Revisão CT-08+CT-14: auditoria operacional (ISSAI 300 / NBASP 300) x conformidade; materialidade e risco; relatórios de auditoria (elementos obrigatórios); recomendações x determinações; monitoramento (item 8)."},{"n":"T.13","tipo":"QUESTÃO TREINO","mat":"Direito Financeiro","top":"9 LC 101/2000 (LRF): arts. 19–22 + 2.5.4 Fiscalização contábil, financeira e orçamentária (CF)","det":"🎯 APOSTA ALTA: (30 linhas, itens a/b/c): (a) Prefeito descumpriu limite prudencial de pessoal (art. 22 LRF) – quais vedações são impostas de imediato?; (b) a EC 109/2021 alterou o critério de cálculo das despesas com pessoal? Explique; (c) o TCE-SC pode determinar a redução de despesas de pessoal diretamente ao Município? Analise a competência do TC e os limites do seu poder cautelar."},{"n":"T.14","tipo":"QUESTÃO TREINO","mat":"Direito Previdenciário","top":"2.2 RPPS: 2.2.1 ECs nº 20/1998, 41/2003 e 103/2019; 2.2.3 Equilíbrio financeiro e atuarial; 2.2.5 Lei 9.717/1998 + Controle Externo da Adm. Pública","det":"🎯 APOSTA ALTA (CT-20 foi lacuna, FGV cobra): (30 linhas, itens a/b/c): (a) O RPPS municipal perdeu o CRP – quais as consequências previstas na Lei 9.717/98 e na EC 103/2019?; (b) como o TCE-SC exerce o controle sobre os RPPS dos Municípios catarinenses (tipo de auditoria, critério, evidência)?; (c) em que consiste o princípio do equilíbrio financeiro e atuarial e como é verificado na DRAA?"},{"n":"T.15","tipo":"QUESTÃO TREINO","mat":"Direito Constitucional / Direito Financeiro","top":"2.8 Das Finanças Públicas: 2.8.2 Dos Orçamentos + Controle Externo: 11 TC do Estado de Santa Catarina; contas do Governador","det":"🎯 APOSTA ALTA: (30 linhas, itens a/b/c): (a) Quais são as competências distintas do TCE-SC (parecer prévio) e da Assembleia Legislativa (julgamento político) nas contas anuais do Governador?; (b) com quórum para rejeitar o parecer prévio; (c) o STF, no RE 848826, entendeu que a inércia da AL não impede a responsabilização do Governador? Explique os fundamentos."},{"n":"T.16","tipo":"QUESTÃO TREINO","mat":"Direito Tributário / Reforma Tributária","top":"11 Reforma Tributária: 11.3 EC nº 132/2023; 11.4 LC nº 214/2025","det":"🎯 APOSTA ALTA (cobrado na objetiva 2026): (30 linhas, itens a/b/c): (a) Explique a estrutura do IBS criado pela EC 132/2023: natureza jurídica, competência compartilhada, alíquota de destino e não cumulatividade plena; (b) qual o papel do Comitê Gestor do IBS e como se dá o controle pelo TC nos repasses entre entes?; (c) as regras de transição da LC 214/2025 impõem ao gestor municipal obrigações de reporte ao TC?"},{"n":"T.17","tipo":"PEÇA TÉCNICA APOSTADA","mat":"LRF + Controle Externo + D. Constitucional (Finanças Públicas)","top":"LC 101/2000 arts. 19–22; CF 2.5.4 Fiscalização; LC 202/2000; CF art. 71 I–IX; Direito Previdenciário: Lei 9.717/98","det":"🎯 APOSTA CERTEIRA (60 linhas): Relatório de Auditoria de Conformidade – TC instaura processo de ofício após detectar que Município X descumpriu limite prudencial de pessoal (art. 22 LRF) por 3 anos consecutivos E deixou de recolher contribuições previdenciárias ao RPPS (Lei 9.717/98). Elabore: (1) apresentação do processo e jurisdição; (2) achados estruturados (LRF + RPPS) com NBASP 100; (3) consequências legais de cada achado; (4) responsabilidade do prefeito e secretário de finanças; (5) determinação com prazo e encaminhamento ao MP de Contas."},{"n":"T.18","tipo":"SIMULADO LIVRE","mat":"— Conforme liberação do cursinho —","top":"Questão discursiva e/ou peça técnica conforme material do cursinho","det":"Realizar quando o cursinho liberar. Sem tema fixo. Anotar tema realizado."},{"n":"T.19","tipo":"MINI REVISÃO","mat":"Todos os tópicos da semana","top":"Revisão \"Aposta Quente\" — sábado 28/06","det":"📌 Tópico 1 — D. Prev. 2.2.3: Equilíbrio financeiro e atuarial do RPPS – DRAA e CRP. 📌 Tópico 2 — LRF art. 22: vedações ao descumprimento do limite prudencial de pessoal. 📌 Tópico 3 — EC 132/2023: IBS – alíquota de destino e não cumulatividade plena. 📌 Tópico 4 — D. Proc. Civil 5.4/5.5: coisa julgada formal x material + relativização. 📌 Tópico 5 — Contas do Governador: RE 848826 – inércia da AL e posição do STF."}],"alertas":["🔴 [LACUNA CRÍTICA — CT-13] Reforma Tributária (EC 132/2023 + LC 214/2025) coberta pela primeira vez.","🔴 [LACUNA CRÍTICA — CT-20] Direito Previdenciário (RPPS/RGPS/EC 103/2019) coberto pela primeira vez.","🟡 [ATENÇÃO — CT-06] Coisa julgada abordada nesta semana – retorno obrigatório em 10 dias (Semana 3).","🟡 [ATENÇÃO — CT-11] LRF/Pessoal – retorno programado Semana 4.","🟢 [PEÇA APOSTADA] Tema: LRF + RPPS municipal. Combo altíssima probabilidade (cobrado na objetiva 2026).","⏱ [STATUS] Faltam 6 semanas. TODAS as lacunas críticas de CT 1/2 sanadas. Fase de consolidação iniciada."]},{"titulo":"SEMANA 3 — 29/06 (dom) a 05/07 (sáb)","foco":"Aprofundar contratos (equilíbrio econômico-financeiro), responsabilidade civil do Estado, e consolidar coisa julgada + previdenciário.","tarefas":[{"n":"T.01","tipo":"REV","mat":"Controle Externo da Adm. Pública","top":"13 Lei Complementar nº 202/2000 (Lei Orgânica TCE-SC); 14 Resolução N.TC-06/2001 (Regimento Interno)","det":"Revisão CT-01+CT-02 (ciclo 3, ≤10 dias): art. 71 CF; arts. 1º, 5º, 6º, 32, 39 LC 202/2000; RI: composição das Câmaras e do Pleno; quórum; julgamento; súmulas e prejulgados do TCE-SC."},{"n":"T.02","tipo":"REV","mat":"Controle Externo da Adm. Pública + Legislação Aplicável ao TCE-SC","top":"Controle pelos tribunais de contas; 11.1 Natureza, competência, jurisdição; Controle Externo – eficácia das decisões do TC (art. 71 §3º CF)","det":"Revisão CT-05 (≤10 dias): art. 71 §3º CF; art. 39 LC 202/2000; natureza de título executivo extrajudicial; legitimidade do MP de Contas e PGE; vedação de autoexecutar; Tema 899 STF (prescrição do ressarcimento ao erário); inscrição em dívida ativa."},{"n":"T.03","tipo":"ESTUDO","mat":"Direito Administrativo","top":"12 Licitações e contratos administrativos: 12.1.1 Lei nº 14.133/2021 – Dos Contratos: arts. 89–154 (formalização, execução, alteração, extinção)","det":"ESTUDO aprofundado CT-03: equilíbrio econômico-financeiro; reajuste (cláusula de índice); revisão (fato do príncipe x sujeição imprevisível); repactuação; álea ordinária x extraordinária; matriz de risco (art. 22 Lei 14.133); limites de alteração unilateral (25%/50%); extinção contratual (art. 137); PMI (Procedimento de Manifestação de Interesse); Diálogo Competitivo."},{"n":"T.04","tipo":"REV","mat":"Direito Administrativo","top":"7 Responsabilidade civil do Estado: 7.1 Evolução histórica; 7.2 Responsabilidade civil no direito brasileiro (7.2.1 ato comissivo; 7.2.2 omissão do Estado); 7.3 Requisitos; 7.4 Causas excludentes; 7.5 Reparação do dano; 7.6 Direito de regresso","det":"Revisão CT-10: teoria objetiva (§6º art. 37 CF); omissão específica (faute du service) x genérica; custódia estatal; danos ambientais; excludentes (caso fortuito, força maior, culpa exclusiva da vítima); direito de regresso (elemento subjetivo ao agente); Tema 649 STF (responsabilidade em convênios)."},{"n":"T.05","tipo":"REV","mat":"Direito Processual Civil","top":"5 Formação, Suspensão e Extinção do Processo: 5.4 Coisa julgada; 5.5 Relativização da coisa julgada; 14 Ação rescisória","det":"Revisão CT-06 (retorno ≤10 dias): coisa julgada formal x material; limites objetivos (arts. 502–506 CPC); questão prejudicial (§1º art. 503); relativização; coisa julgada inconstitucional; ação rescisória (cabimento, prazo 2 anos, legitimidade); MS como sucedâneo."},{"n":"T.06","tipo":"REV","mat":"Direito Previdenciário","top":"2.2 RPPS: 2.2.1 ECs nº 20/1998, 41/2003 e 103/2019; 2.2.3 Equilíbrio financeiro e atuarial; Lei 9.717/1998; Lei Complementar Estadual nº 412/2008","det":"Revisão CT-20 (retorno ≤10 dias): aposentadorias pós-EC 103/2019; regras de transição; contribuições; pensão por morte; FUNPREV-SC (LC 412/2008); CRP – consequências do descumprimento; controle atuarial pelo TC."},{"n":"T.07","tipo":"ESTUDO","mat":"Direito Administrativo","top":"8 Serviços públicos: 8.1 Conceito; 8.2 Elementos constitutivos; 8.3 Formas de prestação; 8.4 Delegação: concessão, permissão e autorização; 8.7 Lei nº 8.987/1995; 8.8 Lei nº 11.079/2004 (PPP)","det":"ESTUDO: princípios dos serviços públicos; extinção da concessão (caducidade, rescisão, anulação, encampação); encampação – indenização prévia; reversão de bens; PPP (Lei 11.079/04): requisitos de abertura (consulta pública, compatibilidade orçamentária); controle pelo TC de concessões e PPPs."},{"n":"T.08","tipo":"ESTUDO","mat":"Direito Administrativo","top":"9 Organização administrativa: 9.1 Centralização, descentralização, concentração e desconcentração; 9.2 Administração direta e indireta; 9.3 Autarquias, fundações, empresas públicas e sociedades de economia mista; 9.4 Entidades paraestatais; 9.5 Lei nº 13.303/2016","det":"ESTUDO CT-07 ampliado: criação e extinção de entes da Adm. Indireta; autarquias (regime); estatais (Lei 13.303/16 – licitação própria); serviços sociais autônomos; delegabilidade do poder de polícia a estatais (Tema 532 STF); jurisdição do TC sobre entes da Adm. Indireta."},{"n":"T.09","tipo":"REV","mat":"Auditoria Governamental, Compliance e Gestão de Risco e Governança","top":"4.11 Importância da amostragem estatística em auditoria; 5 Execução da auditoria: 5.1 Técnicas e procedimentos (exame documental, inspeção física, circularização, conciliações, análise de contas contábeis, revisão analítica)","det":"Revisão CT-14: amostragem probabilística x não-estatística; riscos de amostragem; técnicas de auditoria; circularização; análise de contas contábeis; auditoria contínua; relatório de auditoria (7.1) – elementos obrigatórios."},{"n":"T.10","tipo":"ESTUDO","mat":"Direito Penal","top":"11 Crimes contra a Administração Pública; 15 Crimes e sanções penais na licitação (Lei nº 14.133/2021, arts. 178–188); 16 Crimes de responsabilidade fiscal (Lei nº 10.028/2000)","det":"ESTUDO CT-15: peculato (art. 312), concussão (art. 316), corrupção passiva (art. 317), prevaricação (art. 319); crimes licitatórios (Lei 14.133/21 arts. 178–188 – rol taxativo e penas); crimes fiscais (Lei 10.028/00 – descumprimento de LRF pelo gestor); independência das instâncias."},{"n":"T.11","tipo":"REV","mat":"Direito Tributário / Reforma Tributária","top":"11.3 EC nº 132/2023; 11.4 LC nº 214/2025 (IBS/CBS/IS)","det":"Revisão CT-13 (retorno ≤10 dias): IBS – fato gerador, alíquota de destino, não cumulatividade; CBS; IS; Comitê Gestor; regras de transição; LC 214/2025 – contribuinte, base de cálculo; papel do TC no controle tributário."},{"n":"T.12","tipo":"REV","mat":"Direito Constitucional","top":"3. Ações Constitucionais: 11.1 Mandado de segurança; controle de constitucionalidade","det":"Revisão CT-09 (ciclo 2, ≤10 dias): competência para MS contra TC; SV 10; Súmula 347 e superação; modulação de efeitos; controle de norma municipal por ADPF; effect vinculante."},{"n":"T.13","tipo":"QUESTÃO TREINO","mat":"Direito Administrativo","top":"12.1.1 Lei nº 14.133/2021 – equilíbrio econômico-financeiro (arts. 92, 124–136)","det":"🎯 APOSTA ALTA: (30 linhas, itens a/b/c): (a) Diferencie reajuste, revisão e repactuação no equilíbrio econômico-financeiro do contrato (Lei 14.133/21), indicando os casos de cabimento de cada modalidade; (b) como a matriz de risco (art. 22) aloca a álea ordinária e a extraordinária entre as partes?; (c) um evento climático extremo imprevisto elevou os custos do contrato – cabe revisão? O TCE pode controlar a validade da cláusula de risco?"},{"n":"T.14","tipo":"QUESTÃO TREINO","mat":"Direito Administrativo","top":"7 Responsabilidade civil do Estado: 7.2.1 ato comissivo; 7.2.2 omissão; 7.6 Direito de regresso","det":"🎯 APOSTA MÉDIA-ALTA: (30 linhas, itens a/b/c): (a) Um preso sob custódia estadual foi assassinado por outros detentos – o Estado responde objetivamente ou há necessidade de demonstração de culpa?; (b) qual a diferença de omissão específica (faute du service) e omissão genérica?; (c) o gestor público que causou o dano pode ser acionado em regresso? Quais são os requisitos subjetivos?"},{"n":"T.15","tipo":"QUESTÃO TREINO","mat":"Direito Administrativo","top":"8 Serviços públicos: 8.4 Delegação (concessão, permissão e autorização); 8.7 Lei 8.987/1995; 8.8 Lei 11.079/2004 (PPP)","det":"🎯 APOSTA MÉDIA: (30 linhas, itens a/b/c): (a) Quais os requisitos de abertura do processo licitatório para PPP, previstos no art. 10 da Lei 11.079/2004?; (b) o TCE pode suspender cautelarmente contrato de PPP em execução? Com que fundamento?; (c) em que consiste o \"step-in right\" (cláusula de retomada) na extinção de contratos de concessão?"},{"n":"T.16","tipo":"QUESTÃO TREINO","mat":"Direito Penal / Controle Externo","top":"15 Crimes e sanções penais na licitação (Lei nº 14.133/2021); 16 Crimes de responsabilidade fiscal (Lei nº 10.028/2000)","det":"🎯 APOSTA MÉDIA: (30 linhas, itens a/b/c): (a) O art. 178 da Lei 14.133/21 prevê o crime de \"frustração da competitividade\" – descreva o tipo e compare com o regime anterior (Lei 8.666/93); (b) o secretário de finanças que, dolosamente, assumiu obrigações nos últimos 2 quadrimestres do mandato pode responder penalmente? Qual a tipificação e a base legal?; (c) a condenação criminal do gestor extingue a competência do TC de imputar débito e multa? Explique o princípio da independência das instâncias."},{"n":"T.17","tipo":"PEÇA TÉCNICA APOSTADA","mat":"Contratos Administrativos + Responsabilidade Civil + Controle Externo","top":"Lei 14.133/2021 arts. 89–154 (equilíbrio econômico-financeiro); art. 37 §6º CF (resp. civil); LC 202/2000; NBASP 100","det":"🎯 APOSTA CERTEIRA (60 linhas): Instrução Processual no TCE-SC – contrato de obra pública (Município) teve aditivo de 40% de valor sob alegação de desequilíbrio por \"aumento imprevisto de insumos\". Auditoria identificou que: (a) o aditivo excede o limite legal de 25% para alterações unilaterais (Lei 14.133/21 art. 125); (b) não havia cláusula de risco no contrato (sem matriz de risco); (c) gestora do contrato assinou sem autorização formal. Elabore Nota de Auditoria completa com: jurisdição, achados (NBASP 100), responsabilidade da gestora (omissão específica?), determinações e prazo de defesa."},{"n":"T.18","tipo":"SIMULADO LIVRE","mat":"— Conforme liberação do cursinho —","top":"Questão discursiva e/ou peça técnica conforme material do cursinho","det":"Realizar quando o cursinho liberar."},{"n":"T.19","tipo":"MINI REVISÃO","mat":"Todos os tópicos da semana","top":"Revisão \"Aposta Quente\" — sábado 05/07","det":"📌 Tópico 1 — D. Adm 12.1.1: Equilíbrio econômico-financeiro – matriz de risco e limites de alteração do contrato. 📌 Tópico 2 — D. Adm 7.2.2: Omissão específica do Estado – faute du service e custódia estatal. 📌 Tópico 3 — D. Pen 15: Crimes licitatórios na Lei 14.133/21 – penas e independência de instâncias. 📌 Tópico 4 — D. Prev 2.2.3: DRAA e CRP – consequências do descumprimento. 📌 Tópico 5 — D. Proc Civil 5.4: Coisa julgada – limites objetivos e subjetivos (arts. 502–506 CPC)."}],"alertas":["🟡 [ATENÇÃO — CT-06] Coisa julgada em 2º retorno – consolidar nesta semana.","🟡 [ATENÇÃO — CT-20] Previdenciário em 2º retorno – retorno final na Semana 5.","🟢 [PEÇA APOSTADA] Tema: aditivo ilegal + responsabilidade de gestora. Alta probabilidade (combo Lei 14.133 + resp. civil).","⏱ [STATUS] Faltam 5 semanas. Todos os CT de Nível 1 com pelo menos 2 ciclos. Intensificar prática."]},{"titulo":"SEMANA 4 — 06/07 (dom) a 12/07 (sáb)","foco":"Direito Constitucional avançado (ordem social, Educação, Meio Ambiente), Processo Civil completo, e consolidação de CT-11/CT-12.","tarefas":[{"n":"T.01","tipo":"REV","mat":"Controle Externo da Adm. Pública","top":"11 TCE-SC: 11.1 Natureza, competência, jurisdição e organização + 13 LC nº 202/2000 + 14 Resolução TC-06/2001","det":"Revisão CT-01+CT-02 (ciclo 4): contas de governo x gestão; instauração TCE de ofício (art. 32); recurso de reexame; embargos de declaração; execução fiscal pelo MP de Contas (art. 39); Tema 835 STF."},{"n":"T.02","tipo":"REV","mat":"Legislação Aplicável ao TCE-SC","top":"3. Estrutura e Competências dos Órgãos Auxiliares – Resolução N. TC-149/2019; 4. Regime jurídico dos servidores do TCE-SC: 4.1 Lei nº 6.745/1985; 4.2 LC Estadual nº 255/2004","det":"Revisão CT-19: estatuto dos servidores SC (Lei 6.745/85) – estabilidade; PAD; remoção ex officio (desvio de finalidade); acumulação de cargos; LC 255/2004 (Auditor TCE-SC) – prerrogativas, garantias, carreira; Resolução TC-149/2019 – estrutura de órgãos auxiliares."},{"n":"T.03","tipo":"REV","mat":"Direito Financeiro","top":"9 LC 101/2000 (LRF): arts. 19–22; 2 Despesa pública: 2.2 Disciplina constitucional dos precatórios (art. 100 CF + EC 114/2021)","det":"Revisão CT-11 (ciclo 2): limites LRF; EC 109/2021; art. 29-A CF; RCL; vedações art. 22; art. 42 LRF; restos a pagar; DEA; precatórios – superpreferência alimentar; RPV; controle TC."},{"n":"T.04","tipo":"REV","mat":"Direito Constitucional","top":"2.5 Poder Legislativo: 2.5.4 Fiscalização contábil, financeira e orçamentária + Contas do Governador (CF + LC 202/2000)","det":"Revisão CT-12 (ciclo 2): parecer prévio do TC; julgamento AL; quórum (2/3); deliberações possíveis; RE 848826 (inércia da AL e posição STF/ADPF 36); prescrição do julgamento das contas."},{"n":"T.05","tipo":"ESTUDO","mat":"Direito Constitucional","top":"2.9 Da Ordem Social: 2.9.1 Seguridade Social; 2.9.2 Educação; 2.10 Meio Ambiente; 2.11 Família, Criança, Adolescente, Jovem e Idoso","det":"ESTUDO: piso constitucional de gastos em Educação (art. 212 CF) e Saúde (art. 198 §2º CF); controle pelo TC do cumprimento de gastos mínimos constitucionais; meio ambiente – responsabilidade objetiva e solidária (art. 225 CF); direitos da criança e adolescente (ECA x CF)."},{"n":"T.06","tipo":"ESTUDO","mat":"Direito Constitucional","top":"2.2 Direitos e garantias fundamentais: direitos e deveres individuais e coletivos (art. 5º CF); direitos sociais (art. 6º CF); 2.7 Funções essenciais à justiça (MP junto aos TCs)","det":"ESTUDO: teoria geral dos direitos fundamentais (eficácia horizontal, vertical, diagonal); reserva do possível x mínimo existencial; direitos sociais e controle judicial; MP junto ao TCE-SC – atribuições processuais; advocacia pública (PGE) nas demandas contra o TC."},{"n":"T.07","tipo":"ESTUDO","mat":"Direito Processual Civil","top":"8. Fazenda Pública em Juízo: 8.1 Prazos processuais diferenciados; 8.2 Remessa necessária; 8.3 Regime de precatórios; 8.4 Execução contra a Fazenda Pública; 8.5 Cumprimento de sentença contra a Fazenda Pública; 8.6 Honorários advocatícios","det":"ESTUDO CT-06 ampliado: prazo em quádruplo (contestação) e dobro (recurso) – hipóteses de aplicação; remessa necessária (art. 496 CPC) – hipóteses e limites de valor; impugnação ao cumprimento de sentença (art. 535 CPC); execução fiscal (Lei 6.830/80) das decisões do TC; RPV x precatório."},{"n":"T.08","tipo":"ESTUDO","mat":"Direito Processual Civil","top":"9. Recursos: 9.1 Teoria geral; 9.3 Apelação; 9.4 Agravo de instrumento; 9.7 Recursos especial e extraordinário; 9.8 Repercussão geral e recursos repetitivos; 10. Precedentes: 10.1 Sistema de precedentes CPC/2015; 10.2 IRDR; 10.3 IAC; 10.5 Súmulas vinculantes","det":"ESTUDO: cabimento do agravo de instrumento em decisões de TC (art. 1.015 CPC); REsp x RE em ação contra decisão de TC; repercussão geral; IRDR e IRDR; IAC; reclamação constitucional (art. 988 CPC); sistema de precedentes e vinculatividade para o TC."},{"n":"T.09","tipo":"REV","mat":"Direito Administrativo","top":"11 Processo administrativo: 11.1 Lei nº 9.784/1999 e suas alterações","det":"Revisão CT-16: princípios da Lei 9.784/99; motivação obrigatória; contraditório; recursos administrativos (prazo 10 dias); PAD; delegação e avocação; desistência do processo; convalidação (art. 55); prescrição do direito de anular (art. 54); participação e consulta pública."},{"n":"T.10","tipo":"REV","mat":"Auditoria Governamental, Compliance e Gestão de Risco e Governança","top":"12 Governança: 12.1 Papel e importância; 12.2 Governança, transparência e accountability; 12.3 Governança e governabilidade; 12.4 Princípios da governança pública; compliance","det":"Revisão: princípios de accountability (compliance, responsabilidade, transparência, equidade); INTOSAI GOV; governança x governabilidade; controles internos (COSO); compliance como instrumento de controle preventivo; resolução TC-252/2024 – princípios de integridade."},{"n":"T.11","tipo":"REV","mat":"Direito Tributário / Reforma Tributária","top":"11.1 CF arts. 145–162; 11.2 CTN (bases: tributo, obrigação, crédito tributário, prescrição e decadência); 11.3 EC 132/2023; 11.4 LC 214/2025","det":"Revisão CT-13 (ciclo 3): estrutura do sistema tributário; princípios (legalidade, anterioridade, isonomia, capacidade contributiva); CTN: hipótese de incidência, fato gerador, sujeição ativa/passiva; prescrição e decadência tributária; IBS/CBS revisão; papel do TC no controle tributário."},{"n":"T.12","tipo":"ESTUDO","mat":"Direito Administrativo","top":"14. Desapropriação + 17 Acesso à informação: 17.1 Lei 12.527/2011 (LAI); 17.2 Lei 13.709/2018 (LGPD)","det":"ESTUDO: desapropriação (art. 5º XXIV CF; Decreto-Lei 3.365/41) – modalidades, justa indenização, imissão provisória; retrocessão; LGPD aplicada à Adm. Pública – dado pessoal x informação sigilosa; LAI x LGPD; Portal da Transparência; LGPD e controle pelo TC."},{"n":"T.13","tipo":"QUESTÃO TREINO","mat":"Direito Constitucional / Direito Financeiro","top":"2.9.1 Seguridade Social + 2.9.2 Educação + Fiscalização contábil (2.5.4) + Controle Externo","det":"🎯 APOSTA ALTA: (30 linhas, itens a/b/c): (a) O Município descumpriu o piso constitucional de 25% de gastos com Educação (art. 212 CF) – quais as consequências previstas e como o TC fiscaliza isso?; (b) o conceito de \"gastos em Manutenção e Desenvolvimento do Ensino\" – quais despesas são vedadas segundo o STF?; (c) é cabível ação popular contra ato do gestor que desviou verba do FUNDEB? Quem tem legitimidade?"},{"n":"T.14","tipo":"QUESTÃO TREINO","mat":"Direito Processual Civil","top":"8. Fazenda Pública em Juízo; 9. Recursos; 10. Precedentes; 11.1 Mandado de segurança","det":"🎯 APOSTA ALTA: (30 linhas, itens a/b/c): (a) O Município sofreu condenação em sentença por dano ao erário – quais as particularidades da fase de cumprimento de sentença contra a Fazenda Pública (art. 535 CPC)?; (b) cabe remessa necessária quando a condenação for inferior a 500 salários mínimos?; (c) o MP de Contas ajuizou execução fiscal com base em acórdão do TCE – como se dá a impugnação pelo réu (embargos x impugnação) e quais matérias pode alegar?"},{"n":"T.15","tipo":"QUESTÃO TREINO","mat":"Direito Constitucional","top":"2.2 Direitos e garantias fundamentais; 2.7 Funções essenciais à justiça (MP junto ao TC); 2.10 Meio Ambiente","det":"🎯 APOSTA MÉDIA: (30 linhas, itens a/b/c): (a) O Ministério Público de Contas é parte ou custos legis nos processos do TCE-SC? Quais são suas atribuições?; (b) em que consiste a reserva do possível e quais são seus limites perante o mínimo existencial?; (c) empresa concessionária causou dano ambiental – é objetiva a responsabilidade do Estado concedente? Fundamente em jurisprudência do STF."},{"n":"T.16","tipo":"QUESTÃO TREINO","mat":"Direito Administrativo","top":"14. Desapropriação + 17.1 Lei 12.527/2011 (LAI) + 17.2 Lei 13.709/2018 (LGPD)","det":"🎯 APOSTA MÉDIA: (30 linhas, itens a/b/c): (a) Município procedeu à desapropriação de imóvel sem pagar indenização prévia – quais os fundamentos para impugnação e qual a responsabilidade do gestor perante o TC?; (b) cidadão solicitou acesso a contratos de OS firmados com o Município – o pedido pode ser negado com base na LGPD?; (c) em que hipóteses a LGPD autoriza o tratamento de dados pessoais pela Administração Pública sem consentimento?"},{"n":"T.17","tipo":"PEÇA TÉCNICA APOSTADA","mat":"Direito Constitucional (Educação) + Controle Externo + LRF","top":"CF art. 212 (Educação); LC 202/2000; NBASP 100; LRF; lei 9.394/96 (FUNDEB) dispositivos relevantes","det":"🎯 APOSTA CERTEIRA (60 linhas): Relatório de Auditoria de Conformidade – Município Y não aplicou o mínimo de 25% das receitas de impostos em Educação por 2 exercícios consecutivos e desviou verba do FUNDEB para custeio da Câmara Municipal. Elabore: (1) competência do TC; (2) achados com estrutura NBASP 100 (artigo violado, situação encontrada, causa e consequência); (3) quantificação do dano ao erário; (4) responsabilidade do prefeito e secretário de finanças; (5) encaminhamento ao TCU e ao MPE; (6) dispositivo com prazo."},{"n":"T.18","tipo":"SIMULADO LIVRE","mat":"— Conforme liberação do cursinho —","top":"Questão discursiva e/ou peça técnica conforme material do cursinho","det":"Realizar quando o cursinho liberar."},{"n":"T.19","tipo":"MINI REVISÃO","mat":"Todos os tópicos da semana","top":"Revisão \"Aposta Quente\" — sábado 12/07","det":"📌 Tópico 1 — D. Const 2.9.2: Piso constitucional de Educação (art. 212 CF) – conceito de MDE e vedações. 📌 Tópico 2 — D. Proc Civil 8: Fazenda Pública em juízo – remessa necessária (limites de valor) e impugnação à execução fiscal. 📌 Tópico 3 — D. Const 2.7: MP de Contas – parte x custos legis e atribuições processuais. 📌 Tópico 4 — Leg. TCE-SC 4.1: Estatuto servidores SC (Lei 6.745/85) e LC 255/2004 – remoção e PAD. 📌 Tópico 5 — Auditoria 12: Princípios de governance e accountability – INTOSAI GOV."}],"alertas":["🟡 [ATENÇÃO — CT-12] Contas do Governador em 2º ciclo – consolidar.","🟡 [ATENÇÃO — CT-11] LRF/Pessoal em 2º ciclo – retorno na Semana 6.","🟢 [PEÇA APOSTADA] Tema: descumprimento de piso constitucional de Educação. Alta probabilidade (cobrado nas objetivas, sinalizado pelas discursivas FGV).","⏱ [STATUS] Faltam 4 semanas. Ritmo de cobertura no prazo."]},{"titulo":"SEMANA 5 — 13/07 (dom) a 19/07 (sáb)","foco":"Direito Civil completo (contratos, obrigações, responsabilidade civil), D. Penal aprofundado, e revisões intensivas CT-01/02/05/07/08.","tarefas":[{"n":"T.01","tipo":"REV","mat":"Controle Externo da Adm. Pública","top":"13 LC nº 202/2000 (Lei Orgânica): processo no TCE-SC; 14 Resolução TC-06/2001 (RI)","det":"Revisão CT-01+CT-02 (ciclo 5): prazos recursais; defesa (15 dias); recurso de reexame (30 dias); recurso de revisão; embargos declaração (10 dias); art. 39 (execução); instauração TCE direta; interação art. 71 CF + LC 202/2000."},{"n":"T.02","tipo":"REV","mat":"Legislação Aplicável ao TCE-SC","top":"10.3 Lei nº 13.019/2014 (OSC/MROSC); 10.1 Lei 9.637/1998 (OS); 9.4 Entidades paraestatais e terceiro setor (D. Adm)","det":"Revisão CT-07 (ciclo 3, ≤10 dias): OS x OSCIP x OSC; qualificação; Contrato de Gestão x Termo de Fomento x Colaboração; prestação de contas; ADI 1923; jurisdição TC sobre entidades privadas; TCE direta por irregularidade em OS."},{"n":"T.03","tipo":"REV","mat":"Controle Externo da Adm. Pública","top":"Controle pelos tribunais de contas; ISSAIs 100, 200, 300 e 400; 12 Governança; NBASP 100","det":"Revisão CT-08+CT-14 (ciclo 3): ISSAIs completas; auditoria de conformidade x operacional x financeira; relatório de auditoria; monitoramento; documentação; supervisão (item 10); amostragem; achados."},{"n":"T.04","tipo":"ESTUDO","mat":"Direito Civil","top":"10 Contratos: 10.1 Princípios; 10.2 Classificação; 10.3 Contratos em geral; 10.4 Disposições gerais; 10.5 Interpretação; 10.6 Extinção; 10.7 Espécies de contratos regulados no Código Civil","det":"ESTUDO: princípios contratuais (boa-fé objetiva, função social, relatividade); contratos típicos x atípicos; vícios redibitórios; evicção; extinção contratual (resolução, resilição, rescisão); cláusula penal; arras; espécies de contratos (locação, comodato, depósito, mandato – relevância prática para TC)."},{"n":"T.05","tipo":"ESTUDO","mat":"Direito Civil","top":"11 Obrigações: 11.1 Modalidades das obrigações; 11.2 Transmissão das obrigações; 11.3 Adimplemento e extinção; 11.4 Inadimplemento; 12 Atos unilaterais; 13 Responsabilidade civil","det":"ESTUDO: modalidades de obrigação (dar, fazer, não fazer; alternativas, solidárias, divisíveis); cessão de crédito; assunção de dívida; mora (art. 394 CC); perdas e danos; inadimplemento absoluto x relativo; responsabilidade civil extracontratual (art. 186 CC); dano moral; nexo causal; excludentes."},{"n":"T.06","tipo":"ESTUDO","mat":"Direito Civil","top":"8 Prescrição e decadência; 14 Lei Geral de Proteção de Dados Pessoais (LGPD – Lei nº 13.709/2018)","det":"ESTUDO: prescrição x decadência (diferença de natureza); prazos prescricionais (arts. 205–206 CC); causas suspensivas e interruptivas; prescrição contra a Fazenda Pública; LGPD – dado pessoal sensível; tratamento sem consentimento pela Adm. Pública (art. 7º, III); direitos do titular; ANPD; controle pelo TC dos dados pessoais tratados pela Adm."},{"n":"T.07","tipo":"REV","mat":"Direito Civil","top":"1 Lei de introdução às normas do direito brasileiro – LINDB: 1.1 Vigência; 1.2 Conflito das leis no tempo; 1.3 Eficácia no espaço; + arts. 20–28 (segurança jurídica)","det":"Revisão CT-17 completo: LINDB clássico (vigência, retroatividade, analogia, costumes, princípios); inovações Lei 13.655/2018 (arts. 20–30); consequencialismo (art. 20); boa-fé (arts. 24–25); regime de transição (art. 26); desconsideração de ato irregular por mudança de orientação (art. 24); pareceristas (art. 28)."},{"n":"T.08","tipo":"ESTUDO","mat":"Direito Penal","top":"13 Lei nº 9.613/1998 e suas alterações (Lavagem de dinheiro); 12 Lei nº 13.869/2019 (Abuso de autoridade); 14 Disposições constitucionais aplicáveis ao direito penal","det":"ESTUDO CT-15: lavagem – fases (ocultação, dissimulação, integração); rol de crimes antecedentes; agente público equiparado; comunicações de operações suspeitas ao COAF; abuso de autoridade (Lei 13.869/19) – tipos relevantes ao controle externo (arts. 30, 32, 33); princípio da insignificância; dolo específico em crimes funcionais."},{"n":"T.09","tipo":"REV","mat":"Direito Processual Civil","top":"11 Ações Constitucionais: 11.1 Mandado de segurança individual e coletivo; 11.3 Ação popular; 11.4 Ação civil pública","det":"Revisão CT-09 (ciclo 3): MS individual x coletivo; legitimidade ativa; prazo decadencial (120 dias); competência; liminar; ACP – legitimidade (MP, entes, associações); ação popular – requisito da cidadania; ação civil pública no contexto de improbidade (pós-Lei 14.230/21)."},{"n":"T.10","tipo":"REV","mat":"Direito Administrativo","top":"10.4 Improbidade administrativa: Lei nº 8.429/1992 e suas alterações (Lei 14.230/2021) + 18 LINDB arts. 20–28","det":"Revisão CT-04+CT-17 (ciclo 3): dolo específico; ANPC; sanções; prescrição; competência judicial; LINDB + improbidade como sistema; erro grosseiro do parecerista vs. dolo; Lei anticorrupção (Lei 12.846/2013) – acordo de leniência, pessoa jurídica como sujeito."},{"n":"T.11","tipo":"REV","mat":"Direito Previdenciário","top":"2.2 RPPS: 2.2.1 EC 103/2019; 2.2.3 Equilíbrio financeiro e atuarial; 2.2.5 Lei 9.717/1998 + LC Estadual 412/2008","det":"Revisão CT-20 (ciclo 3): aposentadorias pós-EC 103/2019 (critérios de transição); FUNPREV-SC; CRP; DRAA; controle atuarial; previdência complementar do servidor (Funprev)."},{"n":"T.12","tipo":"REV","mat":"Direito Tributário / Reforma Tributária","top":"11.3 EC 132/2023; 11.4 LC 214/2025 + Direito Tributário: CTN bases","det":"Revisão CT-13 (ciclo 4): IBS/CBS/IS; Comitê Gestor; alíquota de destino; transição; CTN – responsabilidade tributária (arts. 128–138); prescrição e decadência tributária; dívida ativa fiscal; certidões negativas."},{"n":"T.13","tipo":"QUESTÃO TREINO","mat":"Direito Civil","top":"10 Contratos + 13 Responsabilidade civil + 14 LGPD","det":"🎯 APOSTA ALTA: (30 linhas, itens a/b/c): (a) Empresa contratada pelo Município causou dano a terceiro no exercício de atividade do contrato – o Município responde solidariamente ou subsidiariamente? Como fica a questão do regresso?; (b) empresa armazena dados pessoais de beneficiários de programa social e sofre vazamento – quais as responsabilidades do controlador e do operador (LGPD) e qual o papel do TC no caso?; (c) em que situações o art. 7º, III da LGPD autoriza o tratamento de dados pessoais pela Adm. sem consentimento?"},{"n":"T.14","tipo":"QUESTÃO TREINO","mat":"Direito Civil / Direito Processual Civil","top":"11 Obrigações + 8 Prescrição e decadência (D. Civil) + Fazenda Pública em Juízo (D. Proc. Civil)","det":"🎯 APOSTA MÉDIA-ALTA: (30 linhas, itens a/b/c): (a) Em obrigação de fazer imposta ao Poder Público por sentença, como se dá a execução (art. 497 vs. art. 536 CPC)? Aplica-se astreintes à Fazenda?; (b) qual é o prazo prescricional para ações de ressarcimento ao erário ajuizadas pela Fazenda (Tema 899 STF) e como ele se conta?; (c) podem ser opostos embargos de retenção em execução fiscal do MP de Contas com base em benfeitorias realizadas no bem?"},{"n":"T.15","tipo":"QUESTÃO TREINO","mat":"Direito Penal","top":"13 Lei 9.613/1998 (Lavagem); 11 Crimes contra a Adm. Pública; 16 Crimes de responsabilidade fiscal","det":"🎯 APOSTA MÉDIA: (30 linhas, itens a/b/c): (a) Vereador recebeu propina de empresa para votar favoravelmente a contrato municipal – indique os crimes praticados e o concurso de agentes; (b) em que consiste o crime de \"lavagem de capitais\" por \"ocultação\" e qual o papel do COAF na detecção?; (c) o Prefeito, nos 2 últimos meses de mandato, assumiu compromisso de pagamento sem cobertura orçamentária – tipifique penalmente (Lei 10.028/2000) e indique o papel do TC."},{"n":"T.16","tipo":"QUESTÃO TREINO","mat":"Direito Processual Civil","top":"11.1 Mandado de segurança; 11.3 Ação popular; 11.4 Ação civil pública","det":"🎯 APOSTA MÉDIA: (30 linhas, itens a/b/c): (a) Cidadão impetrou MS contra decisão do TCE-SC que julgou suas contas irregulares – qual o órgão competente e qual o prazo?; (b) cabe ACP para ressarcimento ao erário por dano causado por improbidade após a Lei 14.230/21?; (c) em ação popular contra ato de OS que desviou verba pública, quem pode ser réu?"},{"n":"T.17","tipo":"PEÇA TÉCNICA APOSTADA","mat":"Direito Civil (Responsabilidade Civil) + Contratos + Controle Externo + LGPD","top":"Art. 37 §6º CF; CC arts. 186, 927; LGPD Lei 13.709/18; Lei 14.133/21; LC 202/2000; NBASP 100","det":"🎯 APOSTA CERTEIRA (60 linhas): Instrução no TCE-SC – empresa contratada para sistema de dados de beneficiários de programa habitacional municipal sofreu vazamento de dados pessoais (LGPD) E deixou de entregar o sistema no prazo, causando dano ao erário (inadimplemento). Auditor verificou que o contrato não previa matriz de risco nem cláusula de LGPD. Elabore Voto: (1) jurisdição; (2) duplo achado (inadimplemento contratual + violação LGPD); (3) responsabilidade do gestor que aprovou o contrato sem as cláusulas obrigatórias; (4) quantificação do dano; (5) determinações e encaminhamento à ANPD e MP."},{"n":"T.18","tipo":"SIMULADO LIVRE","mat":"— Conforme liberação do cursinho —","top":"Questão discursiva e/ou peça técnica conforme material do cursinho","det":"Realizar quando o cursinho liberar."},{"n":"T.19","tipo":"MINI REVISÃO","mat":"Todos os tópicos da semana","top":"Revisão \"Aposta Quente\" — sábado 19/07","det":"📌 Tópico 1 — D. Civil 13: Responsabilidade civil – solidária entre contratada e Adm. Pública por dano a terceiro. 📌 Tópico 2 — D. Civil 14: LGPD – art. 7º, III (tratamento sem consentimento pela Adm.) e responsabilidade do controlador. 📌 Tópico 3 — D. Pen 13: Lavagem de capitais – fases e papel do COAF; comunicação obrigatória. 📌 Tópico 4 — D. Proc Civil 11.1: MS contra decisão do TC – prazo decadencial (120 dias) e competência. 📌 Tópico 5 — D. Prev 2.2.3: DRAA e equilíbrio atuarial – verificação pelo TC e consequências do déficit."}],"alertas":["🟡 [ATENÇÃO — CT-04+CT-17] Improbidade + LINDB em 3º ciclo – consolidar.","🟡 [ATENÇÃO — CT-20] Previdenciário em 3º ciclo – retorno final na Semana 7.","🟢 [PEÇA APOSTADA] Tema: inadimplemento contratual + LGPD. Combo moderno e cobrado em concursos FGV recentes.","⏱ [STATUS] Faltam 3 semanas de conteúdo + 1 semana de véspera. Acelerar revisões."]},{"titulo":"SEMANA 6 — 20/07 (dom) a 26/07 (sáb)","foco":"Exaustão dos tópicos remanescentes do edital: D. Adm (organização administrativa, serviços públicos), D. Const (Poder Judiciário, processo legislativo), revisões intensivas CT-01 a CT-08.","tarefas":[{"n":"T.01","tipo":"REV","mat":"Controle Externo da Adm. Pública","top":"13 LC nº 202/2000 (Lei Orgânica) + 14 Resolução TC-06/2001 (RI)","det":"Revisão CT-01+CT-02+CT-05 (ciclo 6, ≤10 dias): art. 71 CF completo; art. 32 TCE direta; art. 39 execução; prazos recursais; quórum deliberativo; prejulgados; acórdão x despacho x decisão monocrática; poder cautelar do TC."},{"n":"T.02","tipo":"REV","mat":"Legislação Aplicável ao TCE-SC","top":"3. Estrutura e Competências dos Órgãos Auxiliares – Res. TC-149/2019; 5. Governança e integridade: 5.1 Política de Governança; 5.2 Resolução TC-0252/2024; 5.3 Resolução TC-302/2026; 5.5 Compliance institucional","det":"Revisão: estrutura orgânica do TCE-SC; órgãos auxiliares; Pleno e Câmaras; 7 Processo eletrônico (7.1–7.3); transparência institucional (6.1–6.3); ouvidoria e controle social."},{"n":"T.03","tipo":"REV","mat":"Direito Administrativo","top":"9 Organização administrativa: 9.1 Centralização, descentralização; 9.2 Adm. direta e indireta; 9.3 Autarquias, fundações, EP e SEM; 9.4 Entidades paraestatais; 9.5 Lei 13.303/2016","det":"Revisão CT-07 ampliado (ciclo 4): criação e extinção; EP x SEM (capital social, responsabilidade, regime de licitação); Lei 13.303/16 – estatais; serviços sociais autônomos; delegabilidade do poder de polícia (Tema 532 STF); jurisdição do TC sobre estatais e Adm. Indireta."},{"n":"T.04","tipo":"REV","mat":"Direito Constitucional","top":"2.6 Poder Judiciário: 2.6.1 Disposições gerais; 2.6.2 Órgãos; 2.6.2.1 Organização e competências do CNJ; 2.5.3 Processo legislativo; 2.5.5 CPIs","det":"ESTUDO/REV: organização do Judiciário; CNJ – competência; processo legislativo (ordinário, complementar, especial); CPIs – poderes investigatórios e limitações; analogia entre CPIs e auditorias do TC (poder de requisição, sigilo bancário/fiscal)."},{"n":"T.05","tipo":"REV","mat":"Direito Administrativo","top":"6 Regime jurídico-administrativo: 6.1 Conceito; 6.2 Princípios expressos e implícitos da administração pública","det":"Revisão: princípios constitucionais expressos (LIMPE – art. 37 CF); princípios implícitos (razoabilidade, proporcionalidade, segurança jurídica, proteção da confiança, autotutela, continuidade, motivação); princípios na Lei 14.133/21 (art. 5º – 22 princípios); LINDB como reforço normativo dos princípios."},{"n":"T.06","tipo":"REV","mat":"Direito Administrativo","top":"4 Agentes públicos: 4.2 Disposições doutrinárias (4.2.1 a 4.2.10) + 4.1 Legislação pertinente: 4.1.1 Lei nº 6.745/1985 (Estatuto servidores SC); 4.1.2 Disposições constitucionais","det":"Revisão CT-19: agentes públicos (espécies); cargo, emprego e função; provimento e vacância; estabilidade; PAD; remuneração x subsídio; acumulação de cargos (art. 37 XVI e XVII CF); remoção ex officio e desvio de finalidade; vitaliciedade do Auditor TCE-SC (art. 71 §3º CF)."},{"n":"T.07","tipo":"REV","mat":"Direito Financeiro","top":"8 Lei nº 4.320/1964 e suas alterações; 9 LC 101/2000 e suas alterações; 3 Receita pública; 4 Dívida pública","det":"Revisão CT-11 (ciclo 3): Lei 4.320/64 – estágios da despesa (empenho, liquidação, pagamento); créditos orçamentários; estágios da receita (previsão a recolhimento); DRU/DRE; dívida pública (mobiliária x contratual x fundada x flutuante); inscrição em dívida ativa; RGPS/RPPS nos limites de despesas."},{"n":"T.08","tipo":"REV","mat":"Direito Tributário / Reforma Tributária","top":"11.1 CF arts. 145–162; 11.2 CTN: responsabilidade tributária (arts. 128–138); substituição tributária; 11.3 EC 132/2023; 11.4 LC 214/2025","det":"Revisão CT-13 (ciclo 5, ≤10 dias): responsabilidade tributária – dos sucessores, de terceiros; substituição tributária progressiva; exclusão do crédito (isenção x imunidade); hipóteses de suspensão da exigibilidade; certidões negativas; LC 214/2025 aprofundado."},{"n":"T.09","tipo":"REV","mat":"Direito Processual Civil","top":"12 Processo de Execução: 12.1–12.5; 15 Incidentes Processuais: 15.1 Incidente de desconsideração da personalidade jurídica; 17 Jurisprudência: STF e STJ sobre Fazenda Pública, coisa julgada, responsabilidade civil","det":"Revisão CT-06 (ciclo 4): execução de título extrajudicial (TC acórdão); desconsideração da personalidade jurídica no incidente processual; jurisprudência STF/STJ – Fazenda Pública; prescrição intercorrente (Tema 566 STJ); coisa julgada e preclusão."},{"n":"T.10","tipo":"ESTUDO","mat":"Direito Administrativo","top":"12.1.1 Lei nº 14.133/2021: Infrações e Sanções Administrativas (arts. 155–194); 12.1.2 Decreto nº 11.462/2023 (PNCP)","det":"ESTUDO: sanções administrativas da Lei 14.133/21 – advertência, multa, impedimento de licitar (3 anos), declaração de inidoneidade (3–6 anos); reabilitação; desconsideração da personalidade jurídica no âmbito administrativo; PNCP (Decreto 11.462/23); papel do TC na fiscalização do uso do PNCP."},{"n":"T.11","tipo":"REV","mat":"Auditoria Governamental, Compliance e Gestão de Risco e Governança","top":"3 Planejamento da auditoria: 4.2 Determinação de escopo; 4.3 Materialidade, risco e relevância; 4.7 Matriz de Planejamento; 4.9 Papéis de trabalho; 12 Governança e gestão de risco","det":"Revisão CT-14 aprofundado: Matriz de Planejamento (campos: objeto, critério, tipo de auditoria, achado esperado, procedimento); materialidade e risco inerente x de controle x de detecção; papéis de trabalho (finalidade, custódia, acesso a terceiros); Matriz de Responsabilização – culpabilidade, nexo causal, conduta."},{"n":"T.12","tipo":"REV","mat":"Direito Administrativo","top":"10 Controle da Administração Pública: 10.1 Controle exercido pela Adm.; 10.2 Controle judicial; 10.3 Controle legislativo","det":"Revisão: controle de legalidade (autotutela – Súmulas 346 e 473 STF); controle judicial (sistema de jurisdição una; inafastabilidade do controle); controle de mérito vedado ao Judiciário (discricionariedade); controle legislativo (CPIs, Tribunal de Contas – natureza da competência do TC); controle parlamentar."},{"n":"T.13","tipo":"QUESTÃO TREINO","mat":"Direito Administrativo","top":"12.1.1 Lei 14.133/2021 – Infrações e sanções administrativas (arts. 155–194) + Controle Externo","det":"🎯 APOSTA ALTA: (30 linhas, itens a/b/c): (a) Quais as diferenças entre impedimento de licitar e contratar (art. 156, IV Lei 14.133/21) e declaração de inidoneidade (art. 156, V), quanto a prazo, abrangência e órgão competente para aplicar?; (b) como se processa a desconsideração da personalidade jurídica em procedimento de sanção administrativa?; (c) o TCE-SC pode declarar a empresa inidônea? Quais os limites da competência sancionatória do TC?"},{"n":"T.14","tipo":"QUESTÃO TREINO","mat":"Direito Tributário / Reforma Tributária + Controle Externo","top":"11.3 EC 132/2023; 11.4 LC 214/2025; 11.1 CF arts. 145–162 (repartição de receitas)","det":"🎯 APOSTA ALTA (cobrado na objetiva 2026): (30 linhas, itens a/b/c): (a) Como se dará a repartição das receitas do IBS entre os entes federativos nos termos da EC 132/2023 e da LC 214/2025?; (b) o Comitê Gestor do IBS tem natureza de autarquia especial – como o TC controla os atos do Comitê?; (c) município que subrepresenta sua base tributária junto ao Comitê Gestor causa dano ao erário estadual e municipal – como o TC estadual pode atuar?"},{"n":"T.15","tipo":"QUESTÃO TREINO","mat":"Direito Constitucional / Controle Externo","top":"2.5.3 Processo legislativo + 2.5.5 CPIs + Controle Externo: Controle parlamentar","det":"🎯 APOSTA MÉDIA: (30 linhas, itens a/b/c): (a) CPI estadual pode requisitar documentos sigilosos de empresa que firmou contrato com o Estado? Quais são os poderes das CPIs e seus limites?; (b) qual a relação entre CPI e TC no controle das irregularidades identificadas: podem coexistir?; (c) o TC pode iniciar auditoria para apurar fatos em investigação por CPI, sem violação de competências?"},{"n":"T.16","tipo":"QUESTÃO TREINO","mat":"Auditoria Governamental","top":"4.7 Matriz de Planejamento; 4.9 Papéis de trabalho; 6.2 Matrizes de achados e matriz de responsabilização","det":"🎯 APOSTA ALTA: (30 linhas, itens a/b/c): (a) Quais são os campos obrigatórios da Matriz de Planejamento de auditoria (objeto, critério, escopo, risco, materialidade)?; (b) em que consiste a Matriz de Responsabilização e como ela conecta achado, evidência, critério, conduta e culpabilidade?; (c) um auditor identifica que o gestor seguiu orientação formal da AGU mas a despesa é ilegal – como tratar o elemento culpabilidade na matriz?"},{"n":"T.17","tipo":"PEÇA TÉCNICA APOSTADA","mat":"Licitações (Sanções) + Controle Externo + Organização Administrativa","top":"Lei 14.133/2021 arts. 155–194; LC 202/2000; NBASP 100; LC 123/2006 (EPP em licitações)","det":"🎯 APOSTA CERTEIRA (60 linhas): Instrução no TCE-SC – auditoria detectou que empresa participou de licitação mediante consórcio fictício com filial (fraude à competitividade); venceu e celebrou contrato de R$8M; TC identificou que a Comissão de Contratação sabia do esquema e aprovou. Elabore Voto: (1) achados estruturados (fraude à competitividade – art. 178 Lei 14.133/21 – crime; irregularidade administrativa); (2) responsabilidade da Comissão de Contratação (solidária); (3) determinação de anulação do contrato; (4) limites do TC para declarar inidoneidade da empresa; (5) encaminhamento ao MP para ação penal."},{"n":"T.18","tipo":"SIMULADO LIVRE","mat":"— Conforme liberação do cursinho —","top":"Questão discursiva e/ou peça técnica conforme material do cursinho","det":"Realizar quando o cursinho liberar."},{"n":"T.19","tipo":"MINI REVISÃO","mat":"Todos os tópicos da semana","top":"Revisão \"Aposta Quente\" — sábado 26/07","det":"📌 Tópico 1 — D. Adm 12.1.1 (sanções): Impedimento de licitar x declaração de inidoneidade – prazos e abrangência. 📌 Tópico 2 — D. Fin 8: Estágios da despesa pública (Lei 4.320/64) – empenho, liquidação, pagamento. 📌 Tópico 3 — Auditoria 4.7: Matriz de Planejamento – campos obrigatórios e papel na instrução processual. 📌 Tópico 4 — D. Trib 11.2: Responsabilidade tributária dos sucessores (CTN arts. 128–138). 📌 Tópico 5 — D. Const 2.5.5: CPIs – poderes investigatórios e interação com o TC."}],"alertas":["🟡 [ATENÇÃO — CT-13] Reforma Tributária em 5º ciclo (retorno ≤10 dias) – consolidar definitivamente.","🟡 [ATENÇÃO — CT-11] LRF/Pessoal em 3º ciclo – retorno na Semana 7.","🟢 [PEÇA APOSTADA] Tema: fraude à competitividade + responsabilidade da comissão. Alta probabilidade (objetiva cobrou sanções da Lei 14.133/21).","⏱ [STATUS] Faltam 2 semanas de conteúdo + 1 véspera. Checar lacunas remanescentes antes da Semana 7."]},{"titulo":"SEMANA 7 — 27/07 (dom) a 02/08 (sáb)","foco":"EXAUSTÃO FINAL dos CT Nível 1. Revisão integrativa de todas as disciplinas. Simulado geral preparatório. Zero conteúdo novo relevante.","tarefas":[{"n":"T.01","tipo":"REV FINAL","mat":"Controle Externo da Adm. Pública","top":"TODOS OS ITENS: 1 a 14 (Controle Externo completo); LC 202/2000; Resolução TC-06/2001; ISSAIs; NBASP","det":"Fichamento final CT-01+CT-02+CT-05+CT-08: art. 71 CF (I–IX); art. 32 TCE direta; art. 39 execução; Tema 835 e 899 STF; ISSAIs 100/200/300/400; NBASP 100; jurisdição TC sobre OS (ADI 1923); poder cautelar do TC."},{"n":"T.02","tipo":"REV FINAL","mat":"Legislação Aplicável ao TCE-SC","top":"TODOS OS ITENS 1–7: LC 202/2000; Res. TC-06/2001; Res. TC-149/2019; Leis 6.745/85 e LC 255/2004; Governança; Transparência; Processo eletrônico","det":"Fichamento final CT-07+CT-19: OS/OSCIP/OSC (leis e distinções); ADI 1923; statuto dos servidores (Lei 6.745/85 e LC 255/2004); Código de Ética (Res. TC-0252/2024); Política de disciplina (Res. TC-302/2026); LAI aplicada ao TC."},{"n":"T.03","tipo":"REV FINAL","mat":"Direito Administrativo","top":"Improbidade (Lei 14.230/21) + LINDB arts. 20–28 + Licitações (Lei 14.133/21) + Organização Administrativa","det":"Fichamento final CT-03+CT-04+CT-07+CT-16+CT-17: dolo específico; sanções improbidade; ANPC; equilíbrio econômico-financeiro; sanções licitatórias; concessões e PPPs; OS/OSCIP/OSC; processo administrativo; LINDB + improbidade em sistema."},{"n":"T.04","tipo":"REV FINAL","mat":"Direito Constitucional","top":"2.2 Direitos fundamentais + 2.5 Poder Legislativo + 2.7 Funções essenciais + 3. Ações Constitucionais + Controle de constitucionalidade","det":"Fichamento final CT-09+CT-12: MS contra TC; controle difuso e concentrado; SV 10 (reserva de plenário); Súmula 347; contas do Governador (RE 848826); MP de Contas; funções essenciais; direitos fundamentais (reserva do possível x mínimo existencial)."},{"n":"T.05","tipo":"REV FINAL","mat":"Direito Financeiro + Direito Tributário","top":"LRF (LC 101/2000 arts. 19–22; 42) + D. Financeiro (Lei 4.320/64; precatórios) + Reforma Tributária (EC 132/2023 + LC 214/2025)","det":"Fichamento final CT-11+CT-13: limites de pessoal; EC 109/2021; art. 29-A CF; estágios da despesa; precatórios; IBS/CBS/IS; alíquota de destino; LC 214/2025 bases; controle TC no novo sistema."},{"n":"T.06","tipo":"REV FINAL","mat":"Direito Previdenciário","top":"1 Seguridade Social; 2.2 RPPS (EC 103/2019; Lei 9.717/98; LC Estadual 412/2008)","det":"Fichamento final CT-20: aposentadorias pós-EC 103/2019; FUNPREV-SC; CRP; DRAA; controle atuarial pelo TC; previdência complementar do servidor."},{"n":"T.07","tipo":"REV FINAL","mat":"Direito Processual Civil","top":"5.4 Coisa julgada; 5.5 Relativização; 8. Fazenda Pública em Juízo; 11. Ações Constitucionais; 12. Processo de Execução; 17. Jurisprudência STF/STJ","det":"Fichamento final CT-06+CT-09: coisa julgada formal x material; limites objetivos e subjetivos; rescisória; MS contra TC; Fazenda Pública em juízo (remessa necessária, execução fiscal, impugnação); jurisprudência STF/STJ (Fazenda Pública; prescrição)."},{"n":"T.08","tipo":"REV FINAL","mat":"Auditoria Governamental, Compliance e Gestão de Risco e Governança","top":"4.7 Matriz de Planejamento; 4.9 Papéis de trabalho; 6.1 Caracterização de achados; 6.2 Matrizes; 12 Governança","det":"Fichamento final CT-14: Matriz de Planejamento (campos); achados (atributos); Matriz de Responsabilização (culpabilidade, nexo causal, conduta); governança e accountability; compliance; INTOSAI GOV."},{"n":"T.09","tipo":"REV FINAL","mat":"Direito Civil + Direito Penal","top":"D. Civil: 10 Contratos + 11 Obrigações + 13 Responsabilidade civil + 14 LGPD; D. Penal: 11 Crimes Adm. + 13 Lavagem + 15 Crimes licitatórios + 16 Crimes fiscais","det":"Fichamento final CT-15+CT-18: crimes funcionais vs. improbidade; lavagem de dinheiro (fases + COAF); crimes licitatórios (Lei 14.133/21); crimes fiscais (Lei 10.028/00); responsabilidade civil do Estado; LGPD; independência das instâncias."},{"n":"T.10","tipo":"REV FINAL","mat":"Direito Administrativo – Responsabilidade Civil e Serviços Públicos","top":"7 Responsabilidade civil do Estado (7.1–7.6); 8 Serviços públicos (8.1–8.8; Lei 8.987/95; Lei 11.079/04)","det":"Fichamento final CT-10: teoria objetiva; omissão específica x genérica; excludentes; direito de regresso; concessões e PPPs; extinção; reversão de bens; controle TC sobre concessões."},{"n":"T.11","tipo":"QUESTÃO TREINO","mat":"Controle Externo + Improbidade + LINDB","top":"Lei 14.230/21 (improbidade) + 18 LINDB arts. 20–28 + Controle Externo: LC 202/2000","det":"🎯 APOSTA ALTÍSSIMA (CT-01+CT-04+CT-17 – combo mais cobrado FGV): (30 linhas, itens a/b/c): (a) Gestor municipal cumpriu orientação do TCE-SC sobre forma de contratar serviço, mas o método foi julgado ilegal pela Câmara Municipal – incide dolo específico na improbidade?; (b) como o art. 28 LINDB protege o gestor de boa-fé que agiu sob orientação formal do TC?; (c) o TC pode revisar sua própria orientação com efeito retroativo para imputar débito ao gestor que a seguiu? Analise à luz dos arts. 23 e 24 LINDB."},{"n":"T.12","tipo":"QUESTÃO TREINO","mat":"Controle Externo + D. Financeiro + D. Previdenciário","top":"LC 202/2000 + LC 101/2000 arts. 19–22 + Lei 9.717/98 (RPPS) + Controle Externo","det":"🎯 APOSTA ALTÍSSIMA: (30 linhas, itens a/b/c): (a) Município descumpriu limite de pessoal (LRF) E perdeu o CRP por falta de contribuição ao RPPS – quais as consequências legais para cada infração?; (b) o TCE-SC pode instaurar TCE de ofício para apurar descumprimento simultâneo de LRF e Lei 9.717/98? Qual o rito?; (c) é possível aplicar ao prefeito a sanção de inabilitação para o exercício de cargo em comissão? Com base em quê?"},{"n":"T.13","tipo":"QUESTÃO TREINO","mat":"Direito Administrativo / Controle Externo","top":"12.1.1 Lei 14.133/2021 (contratação direta: arts. 72–76) + Controle Externo + Direito Penal","det":"🎯 APOSTA ALTÍSSIMA: (30 linhas, itens a/b/c): (a) O que é \"emergência fabricada\" prevista no art. 75, VIII da Lei 14.133/21 e como o TC identifica esse vício?; (b) quais as consequências administrativas e penais (Lei 14.133/21 arts. 178–188) para o gestor que fabrica a emergência para dispensar a licitação?; (c) pode o TCE-SC sustar contrato já em execução firmado com base em dispensa indevida? Qual o rito (art. 71, X CF)?"},{"n":"T.14","tipo":"QUESTÃO TREINO","mat":"Auditoria Governamental + Controle Externo","top":"NBASP 100: achados, matrizes + Controle Externo: 11.1 TCE-SC; poder cautelar do TC","det":"🎯 APOSTA ALTA: (30 linhas, itens a/b/c): (a) Auditor do TCE-SC verifica em auditoria de conformidade que gasto com \"consultorias\" em OS não tem evidência material – como estrutura o achado segundo NBASP 100?; (b) em que momento processual o TC pode determinar, liminarmente, a suspensão dos pagamentos à OS?; (c) a falta de nexo causal entre a conduta do gestor e o dano identificado exclui a responsabilidade?"},{"n":"T.15","tipo":"PEÇA TÉCNICA APOSTADA","mat":"Improbidade + LINDB + Controle Externo + Auditoria","top":"Lei 14.230/21; LINDB arts. 20–28; LC 202/2000 arts. 32, 39; NBASP 100; art. 71 CF; Lei 12.846/2013 (anticorrupção)","det":"🎯 APOSTA CERTEIRA MÁXIMA (60 linhas): Instrução Processual – TCE-SC auditou contrato de empresa de TI firmado diretamente (inexigibilidade – art. 74 Lei 14.133/21). Verificou: (a) falta de demonstração de singularidade do serviço; (b) empresa ligada a sócio do secretário de finanças; (c) Jurídico da Câmara emitiu parecer favorável à inexigibilidade com base em critérios genéricos. Elabore Voto completo: achados (NBASP 100) + responsabilidade do secretário (improbidade? dolo específico? – art. 1º §1º Lei 14.230/21) + responsabilidade do parecerista jurídico (art. 28 LINDB – erro grosseiro?) + Lei anticorrupção (Lei 12.846/13 – responsabilidade objetiva da empresa) + TCE de ofício (art. 32 LC 202/2000) + dispositivo completo."},{"n":"T.16","tipo":"SIMULADO LIVRE","mat":"— Conforme liberação do cursinho —","top":"Questão discursiva e/ou peça técnica conforme material do cursinho","det":"Realizar quando o cursinho liberar."},{"n":"T.17","tipo":"MINI REVISÃO","mat":"Todos os CT – REVISÃO GERAL","top":"Revisão \"Aposta Quente\" CONSOLIDADA — sábado 02/08","det":"📌 ARTIGOS-ÂNCORA CT-01 a CT-20 (memorizar): art. 71 CF (competência TC); art. 32 LC 202/2000 (TCE direta); art. 1º §1º Lei 14.230/21 (dolo específico); arts. 502–506 CPC (coisa julgada); art. 22 LRF (limite prudencial pessoal); art. 37 §6º CF (resp. civil objetiva); art. 40 CF + EC 103/2019 (RPPS); arts. 145–162 CF + EC 132/2023 (tributário); ADI 1923 (jurisdição TC sobre OS); Tema 835 STF (Prefeito ordenador); Tema 899 STF (prescrição erário); art. 28 LINDB (pareceristas – erro grosseiro); art. 75 VIII Lei 14.133/21 (emergência fabricada); SV 10 (reserva de plenário); RE 848826 (contas Governador – inércia AL); Lei 9.717/98 art. 5º (CRP)."}],"alertas":["🔴 [REGRA ABSOLUTA] A partir desta semana: nenhum tópico novo que não tenha sido estudado nas semanas 1–6 deve ser iniciado.","🟢 [PEÇA APOSTADA] Tema: inexigibilidade fraudada + improbidade + parecerista + Lei anticorrupção. APOSTA MÁXIMA de probabilidade FGV.","📌 [ESTRATÉGIA] Semana 7 é a última semana de conteúdo substantivo. Semana 8 é exclusivamente de revisão e prática.","⏱ [STATUS] Faltam 7 dias de conteúdo + 1 semana de véspera. Todos os CT de Nível 1 com mínimo 4 ciclos. CT de Nível 2: mínimo 3 ciclos."]},{"titulo":"SEMANA 8 — 03/08 (dom) a 08/08 (sex) | VÉSPERA — ZERO CONTEÚDO NOVO","foco":"Exclusivamente revisão, simulado geral completo, estratégia de prova e descanso controlado. Nenhum tópico novo.","tarefas":[{"n":"T.01","tipo":"REV VÉSPERA","mat":"Controle Externo da Adm. Pública + Legislação TCE-SC","top":"CT-01: art. 71 CF; CT-02: art. 32 LC 202/2000; CT-05: art. 39 LC 202/2000 + art. 71 §3º CF + Tema 899 STF; CT-07: ADI 1923; CT-08: ISSAIs; NBASP 100","det":"Revisão rápida (fichas/anotações): art. 71 CF incisos I–IX; TCE direta; título executivo; Tema 835 e 899 STF; ISSAIs 100/400; OS x OSC x OSCIP; ADI 1923; controle preventivo/concomitante/subsequente."},{"n":"T.02","tipo":"REV VÉSPERA","mat":"Direito Administrativo","top":"CT-03: Lei 14.133/2021 (equilíbrio econômico-financeiro; sanções arts. 155–194); CT-04: improbidade (dolo específico; sanções; ANPC); CT-10: resp. civil do Estado; CT-16: Proc. Adm. Lei 9.784/99; CT-17: LINDB arts. 20–28","det":"Revisão rápida: equilíbrio econômico-financeiro + matriz de risco; dolo específico (art. 1º §1º Lei 14.230/21); sanções improbidade; ANPC; art. 28 LINDB (pareceristas); omissão específica x genérica; vícios do ato (convalidável x insanável)."},{"n":"T.03","tipo":"REV VÉSPERA","mat":"Direito Constitucional + Direito Processual Civil","top":"CT-06: coisa julgada (arts. 502–506 CPC); CT-09: MS contra TC + SV 10; CT-12: contas do Governador + RE 848826; 2.9 Ordem Social (Educação); 2.7 Funções essenciais (MP)","det":"Revisão rápida: coisa julgada formal x material; limites objetivos e subjetivos; MS prazo decadencial (120 dias) + competência; reserva de plenário (SV 10); contas do Governador (parecer prévio + julgamento AL); RE 848826; MDE e piso constitucional de Educação."},{"n":"T.04","tipo":"REV VÉSPERA","mat":"Direito Financeiro + Direito Tributário + Direito Previdenciário","top":"CT-11: LRF arts. 19–22; CT-13: EC 132/2023 (IBS/CBS/IS) + LC 214/2025; CT-20: RPPS (EC 103/2019; Lei 9.717/98; CRP)","det":"Revisão rápida: limites de pessoal LRF; EC 109/2021; art. 42 LRF; IBS – alíquota de destino; não cumulatividade; transição; RPPS – aposentadorias pós-EC 103/2019; CRP; equilíbrio financeiro e atuarial (DRAA)."},{"n":"T.05","tipo":"REV VÉSPERA","mat":"Auditoria Governamental + Direito Civil + Direito Penal","top":"CT-14: Matriz de Planejamento + achados + responsabilização; CT-15: crimes Adm. + lavagem + crimes licitatórios; CT-18: contratos + resp. civil + LGPD; CT-19: regime jurídico servidores","det":"Revisão rápida: Matriz de Planejamento (campos); atributos do achado (NBASP 100); culpabilidade e nexo causal; crimes funcionais x improbidade (independência de instâncias); lavagem (fases + COAF); LGPD art. 7º, III; responsabilidade solidária vs. subsidiária."},{"n":"T.06","tipo":"SIMULADO GERAL","mat":"Todos os CT – Simulado em condições reais","top":"1 Peça Técnica (60 linhas) + 2 Questões Subjetivas (30 linhas cada) = 4 horas de prova","det":"SIMULAR CONDIÇÕES REAIS: (1) Peça Técnica integrada (CT-01+CT-03+CT-04+CT-05): Instrução Processual envolvendo contrato emergencial irregular + imputação de débito + TCE direta + execution fiscal; (2) Q. Subjetiva 1 (CT-11+CT-12): Despesas com pessoal Câmara Municipal + EC 109/2021 + contas do Governador e RE 848826; (3) Q. Subjetiva 2 (CT-04+CT-20): Gestor que deixou RPPS sem CRP + dolo específico + equilíbrio financeiro e atuarial."},{"n":"T.07","tipo":"PEÇA TÉCNICA APOSTADA","mat":"Controle Externo + Licitações + Improbidade + LINDB","top":"Lei 14.133/21 art. 75 VIII (emergência fabricada); Lei 14.230/21 art. 1º §1º; LINDB art. 28; LC 202/2000 art. 32; art. 71 §3º CF; NBASP 100","det":"🎯 TREINO APOSTA FINAL (60 linhas): Secretário municipal de obras contratou empresa de terraplanagem por \"emergência\" após enchente. Auditoria verificou: (a) a enchente ocorreu há 8 meses; (b) orçamento foi obtido de empresa do mesmo grupo econômico da contratada; (c) Jurídico da Secretaria emitiu parecer favorável sem examinar os fatos. Elabore Voto completo: achados + responsabilidades (secretário, comissão e parecerista) + art. 28 LINDB + imputação de débito + TCE de ofício + encaminhamento ao MP."},{"n":"T.08","tipo":"SIMULADO LIVRE","mat":"— Conforme liberação do cursinho —","top":"Questão discursiva e/ou peça técnica conforme material do cursinho","det":"Realizar quando o cursinho liberar (última oportunidade antes da prova)."},{"n":"T.09","tipo":"MINI REVISÃO","mat":"Revisão final estratégica","top":"Revisão \"Aposta Quente\" FINAL — sábado 08/08","det":"📌 ARTIGOS-ÂNCORA FINAIS + ESTRATÉGIA DE PROVA: (1) Leia todos os 5 enunciados antes de escrever; (2) planeje a Peça Técnica (esqueleto 5 min: Relatório / Achados / Dispositivo); (3) escreva a Peça em 60 min; (4) Questões subjetivas: 30 min cada; (5) Reserve 10 min para revisão de paragrafação e artigos citados; (6) Sempre encerre com: fundamento legal + jurisprudência + conclusão. 📌 FÓRMULA FGV: FATO → NORMA APLICÁVEL → ARTIGO LITERAL → JURISPRUDÊNCIA-SÍNTESE → CONCLUSÃO OBJETIVA."}],"alertas":["🔴 [REGRA ABSOLUTA] ZERO conteúdo novo. Qualquer dúvida remanescente = risco aceito.","🟢 [SIMULADO GERAL] Realizar o simulado em condições reais de prova (4 horas, sem consulta, folha de 60 linhas).","📌 [DIA DA PROVA — 9 DE AGOSTO DE 2026] Boa prova."]}];
+
+// Adiciona ids dinâmicos únicos para contornar a ausência deles no JSON original
+DATA.forEach((s, si) => {
+  s.tarefas.forEach((t, ti) => {
+    t.id = 's' + (si + 1) + '_' + t.n.replace('.', '').toLowerCase();
+  });
+});
+
+const TIPO_BLOCO = {
+  'REV':'CE','ESTUDO':'DIR',
+  'REV FINAL':'CE','REV VÉSPERA':'CE',
+  'QUESTÃO TREINO':'QT','PEÇA TÉCNICA APOSTADA':'PT',
+  'SIMULADO LIVRE':'SIM','SIMULADO GERAL':'SIM','MINI REVISÃO':'MINI'
+};
+
+const BLOCO_META = {
+  CE:{label:'Controle Externo / Leg. TCE-SC / Auditoria',icon:'ti-shield-check',cls:'bloco-CE'},
+  DIR:{label:'Direito Específico',icon:'ti-book',cls:'bloco-DIR'},
+  QT:{label:'Questões Discursivas de Treino',icon:'ti-pencil',cls:'bloco-QT'},
+  PT:{label:'Peça Técnica Apostada',icon:'ti-file-description',cls:'bloco-PT'},
+  SIM:{label:'Simulado Livre',icon:'ti-player-play',cls:'bloco-SIM'},
+  MINI:{label:'Mini Revisão "Aposta Quente"',icon:'ti-star',cls:'bloco-MINI'},
+};
+
+const TIPO_CLASS = {
+  'REV':'tp-REV','ESTUDO':'tp-ESTUDO',
+  'REV FINAL':'tp-REV-FINAL','REV VÉSPERA':'tp-REV-VESPERA',
+  'QUESTÃO TREINO':'tp-QUESTAO-TREINO',
+  'PEÇA TÉCNICA APOSTADA':'tp-PECA-TECNICA-APOSTADA',
+  'SIMULADO LIVRE':'tp-SIMULADO-LIVRE',
+  'SIMULADO GERAL':'tp-SIMULADO-GERAL',
+  'MINI REVISÃO':'tp-MINI-REVISAO',
+};
+
+const TIPO_LABEL = {
+  'REV':'REVISÃO','ESTUDO':'ESTUDO',
+  'REV FINAL':'REV. FINAL','REV VÉSPERA':'REV. VÉSPERA',
+  'QUESTÃO TREINO':'Q. TREINO',
+  'PEÇA TÉCNICA APOSTADA':'PEÇA APOSTADA',
+  'SIMULADO LIVRE':'SIMULADO LIVRE',
+  'SIMULADO GERAL':'SIMULADO GERAL',
+  'MINI REVISÃO':'MINI REV.',
+};
+
+const NOTAS = [
+  {v:'',l:'— avaliar —'},
+  {v:'otimo',l:'Ótimo (90–100%)'},
+  {v:'bom',l:'Bom (70–89%)'},
+  {v:'regular',l:'Regular (50–69%)'},
+  {v:'ruim',l:'Abaixo (< 50%)'},
+];
+
+const CT_MAP = {
+  'CT-01':['Jurisdição e Competência TC','s1_t01,s2_t01,s3_t01,s4_t01,s5_t01,s6_t01,s7_t01,s8_t01'],
+  'CT-02':['Tomada de Contas Especial','s1_t02,s2_t02,s3_t01,s3_t02,s4_t01,s5_t01,s7_t01'],
+  'CT-03':['Licitações Lei 14.133/2021','s1_t11,s2_t08,s3_t03,s5_t02,s6_t10,s7_t03'],
+  'CT-04':['Improbidade (Lei 14.230/21)','s1_t06,s2_t06,s3_t10,s5_t10,s7_t03,s7_t11'],
+  'CT-05':['Eficácia das Decisões do TC','s1_t01,s2_t02,s3_t02,s6_t01,s7_t01,s8_t01'],
+  'CT-07':['Terceiro Setor (OS/OSCIP/OSC)','s1_t05,s2_t05,s3_t08,s5_t02,s6_t03,s7_t02'],
+  'CT-08':['Controle Externo – ISSAIs/NBASP','s1_t03,s2_t12,s3_t09,s5_t03,s6_t11,s7_t01'],
+  'CT-09':['MS contra Atos do TC','s1_t08,s1_t09,s2_t11,s3_t12,s4_t14,s5_t09,s7_t04'],
+  'CT-11':['Despesas com Pessoal – LRF','s2_t09,s3_t02,s4_t03,s6_t07,s7_t05,s8_t04'],
+  'CT-12':['Contas do Chefe do Executivo','s2_t10,s4_t04,s7_t04,s8_t03'],
+  'CT-13':['Reforma Tributária (EC 132/2023)','s2_t03,s3_t11,s4_t11,s5_t12,s6_t08,s7_t05,s8_t04'],
+  'CT-14':['Auditoria Gov. – Matrizes/Achados','s1_t12,s2_t12,s3_t09,s4_t10,s5_t03,s6_t11,s7_t08'],
+  'CT-20':['Direito Previdenciário (RPPS)','s2_t04,s3_t06,s5_t11,s7_t06,s8_t04'],
+};
+
+const SEMANA_COLORS = ['#1F3864','#2E5FA3','#145A32','#4A235A','#784212','#0F6E56','#7D6608','#C0392B'];
+
+let prog = {};
+let saveTimer = null;
+let storageAvail = typeof window.storage !== 'undefined' && window.storage !== null;
+
+// ─── STORAGE ──────────────────────────────────────────────────
+function setSaveStatus(state){
+  const dot = document.getElementById('saveDot');
+  const txt = document.getElementById('saveText');
+  const map = {
+    loading:['saving','Carregando...'],
+    saving:['saving','Salvando...'],
+    ok:['','Progresso salvo'],
+    error:['error','Erro ao salvar'],
+    local:['','Salvo localmente'],
+  };
+  const [cls,label] = map[state]||['',''];
+  if(dot) dot.className = 'save-dot ' + cls;
+  if(txt) txt.textContent = label;
+}
+
+async function loadProg(){
+  setSaveStatus('loading');
+  try {
+    if(storageAvail){
+      const r = await window.storage.get(STORAGE_KEY);
+      if(r && r.value) prog = JSON.parse(r.value);
+    } else {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw) prog = JSON.parse(raw);
+    }
+    setSaveStatus(storageAvail ? 'ok' : 'local');
+  } catch(e){
+    // Fallback amigável se a API customizada falhar
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) prog = JSON.parse(raw);
+    setSaveStatus('local');
+  }
+}
+
+function scheduleSave(){
+  setSaveStatus('saving');
+  if(saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(async ()=>{
+    const payload = JSON.stringify(prog);
+    try {
+      if(storageAvail){
+        await window.storage.set(STORAGE_KEY, payload);
+        setSaveStatus('ok');
+        toast('Progresso salvo na nuvem ✓');
+      } else {
+        localStorage.setItem(STORAGE_KEY, payload);
+        setSaveStatus('local');
+        toast('Salvo localmente ✓');
+      }
+    } catch(e){
+      localStorage.setItem(STORAGE_KEY, payload);
+      setSaveStatus('local');
+      toast('Salvo localmente ✓');
+    }
+  }, 700);
+}
+
+// ─── BUILD UI ─────────────────────────────────────────────────
+function buildSidebar(){
+  const nav = document.getElementById('sidebar');
+  if(!nav) return;
+  nav.innerHTML = '';
+
+  const dashItem = mkSidebarItem('ti-layout-dashboard','Dashboard','page-dashboard');
+  nav.appendChild(dashItem);
+
+  const div = document.createElement('div');
+  div.className = 'sidebar-section';
+  div.textContent = 'Semanas de estudo';
+  nav.appendChild(div);
+
+  DATA.forEach((sem,si) => {
+    const done = sem.tarefas.filter(t=>prog['chk_'+t.id]).length;
+    const tot = sem.tarefas.length;
+    const pct = Math.round(done/tot*100);
+    const label = sem.titulo.split('—')[0].trim().replace('SEMANA ','Sem. ');
+    const item = mkSidebarItem('ti-calendar-event', label, 'page-checklist', si);
+    nav.appendChild(item);
+    const pb = document.createElement('div');
+    pb.className = 'sidebar-progress';
+    pb.id = 'spb_'+si;
+    pb.innerHTML = `<div class="sidebar-progress-fill" style="width:${pct}%;background:${SEMANA_COLORS[si]}"></div>`;
+    nav.appendChild(pb);
+  });
+}
+
+function mkSidebarItem(icon, label, page, semIdx){
+  const el = document.createElement('div');
+  el.className = 'sidebar-item';
+  el.innerHTML = `<i class="ti ${icon}" aria-hidden="true"></i><span>${label}</span>`;
+  el.onclick = () => {
+    document.querySelectorAll('.sidebar-item').forEach(x=>x.classList.remove('active'));
+    el.classList.add('active');
+    if(page === 'page-checklist'){
+      showPage('checklist');
+      if(semIdx !== undefined){
+        setTimeout(()=>{
+          const el2 = document.getElementById('sem_'+semIdx);
+          if(el2) el2.scrollIntoView({behavior:'smooth',block:'start'});
+        }, 80);
+      }
+    } else {
+      showPage('dashboard');
+    }
+  };
+  return el;
+}
+
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const targetPage = document.getElementById('page-'+name);
+  if(targetPage) targetPage.classList.add('active');
+  if(name==='dashboard') buildDash();
+}
+
+function buildChecklist(){
+  const wrap = document.getElementById('page-checklist');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  wrap.insertAdjacentHTML('beforeend', `
+    <div class="section-header">
+      <h2>Cronograma semanal</h2>
+      <p>140 tarefas · 8 semanas · Clique para expandir e registrar seu progresso</p>
+    </div>
+  `);
+
+  DATA.forEach((sem,si) => {
+    const done = sem.tarefas.filter(t=>prog['chk_'+t.id]).length;
+    const tot = sem.tarefas.length;
+    const pct = Math.round(done/tot*100);
+    const isVespera = sem.titulo.includes('VÉSPERA');
+    const card = document.createElement('div');
+    card.className = 'semana-card' + (isVespera?' semana-vespera':'');
+    card.id = 'sem_'+si;
+
+    const grupos = {};
+    sem.tarefas.forEach(t => {
+      const b = TIPO_BLOCO[t.tipo] || 'DIR';
+      if(!grupos[b]) grupos[b] = [];
+      grupos[b].push(t);
+    });
+    const blocoOrder = ['CE','DIR','QT','PT','SIM','MINI'];
+
+    card.innerHTML = `
+      <div class="semana-head${si===0?' open':''}" id="sh_${si}" onclick="toggleSem(${si})">
+        <div class="semana-head-num">${si+1}</div>
+        <div class="semana-head-info">
+          <h3>${sem.titulo.split('—').slice(1,2).join('').trim().split('|')[0].trim()}</h3>
+          <p>${sem.foco.length > 90 ? sem.foco.substring(0,90)+'...' : sem.foco}</p>
+        </div>
+        <div class="semana-head-right">
+          <div class="progress-ring-wrap">
+            <svg width="38" height="38" viewBox="0 0 38 38">
+              <circle class="progress-ring-bg" cx="19" cy="19" r="16"/>
+              <circle class="progress-ring-fill" id="ring_${si}" cx="19" cy="19" r="16"
+                stroke-dasharray="${(2*Math.PI*16).toFixed(1)}"
+                stroke-dashoffset="${((1-pct/100)*2*Math.PI*16).toFixed(1)}"/>
+            </svg>
+            <div class="progress-ring-text" id="ring_txt_${si}">${pct}%</div>
+          </div>
+          <i class="ti ti-chevron-down chevron-icon" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="semana-body${si===0?' open':''}" id="sb_${si}">
+        <div class="foco-bar"><i class="ti ti-target" aria-hidden="true"></i><span><strong>Foco da semana:</strong> ${sem.foco}</span></div>
+        <div class="alertas-wrap" id="alw_${si}"></div>
+        <div class="obs-row">
+          <i class="ti ti-notes" aria-hidden="true"></i>
+          <label>Observações&nbsp;da&nbsp;semana:</label>
+          <textarea placeholder="Anote o tema do simulado livre, dificuldades, insights..." data-si="${si}">${prog['obs_'+si]||''}</textarea>
+        </div>
+        <div id="blocos_${si}"></div>
+      </div>`;
+
+    wrap.appendChild(card);
+
+    var alWrap = card.querySelector('#alw_' + si);
+    sem.alertas.forEach(function(txt){
+      var tipo = 'yellow';
+      if(txt.indexOf('🔴') === 0 || txt.indexOf('🚨') === 0) tipo = 'red';
+      else if(txt.indexOf('🟢') === 0) tipo = 'green';
+      var icon = tipo==='red' ? 'ti-alert-circle' : tipo==='green' ? 'ti-circle-check' : 'ti-alert-triangle';
+      var div = document.createElement('div');
+      div.className = 'alerta al-' + tipo;
+      div.innerHTML = '<i class="ti ' + icon + '" aria-hidden="true"></i><span>' + txt + '</span>';
+      alWrap.appendChild(div);
+    });
+
+    card.querySelector('textarea').addEventListener('input', function(){
+      prog['obs_'+this.dataset.si] = this.value;
+      scheduleSave();
+    });
+
+    const blocoWrap = card.querySelector('#blocos_'+si);
+    blocoOrder.forEach(bk => {
+      if(!grupos[bk]) return;
+      const bm = BLOCO_META[bk];
+      const blocoEl = document.createElement('div');
+      blocoEl.className = 'bloco-' + bk;
+      blocoEl.innerHTML = `<div class="bloco-header"><i class="ti ${bm.icon}" aria-hidden="true"></i><span>${bm.label}</span></div>`;
+      grupos[bk].forEach(t => {
+        blocoEl.appendChild(mkTarefa(t, si));
+      });
+      blocoWrap.appendChild(blocoEl);
+    });
+  });
+}
+
+function mkTarefa(t, si){
+  const checked = !!prog['chk_'+t.id];
+  const desemp = prog['des_'+t.id]||'';
+  const tc = TIPO_CLASS[t.tipo]||'tp-ESTUDO';
+  const tl = TIPO_LABEL[t.tipo]||t.tipo;
+  const pill = desemp ? `<span class="nota-pill np-${desemp}">${NOTAS.find(n=>n.v===desemp).l.split(' ')[0]}</span>` : '';
+
+  const row = document.createElement('div');
+  row.className = 'tarefa' + (checked?' done':'');
+  row.id = 'tr_'+t.id;
+  row.innerHTML = `
+    <div class="tarefa-cb">
+      <input type="checkbox" id="cb_${t.id}" ${checked?'checked':''} aria-label="${t.top.substring(0,50)}">
+    </div>
+    <div class="tarefa-tipo">
+      <span class="tipo-pill ${tc}">${tl}</span>
+    </div>
+    <div class="tarefa-info">
+      <div class="tarefa-mat">${t.mat}</div>
+      <div class="tarefa-top">${t.top}</div>
+      <div class="tarefa-det-inline">${t.det}</div>
+    </div>
+    <div class="tarefa-nota">
+      <span class="nota-label">Desempenho</span>
+      <select class="nota-sel" data-id="${t.id}">
+        ${NOTAS.map(n=>`<option value="${n.v}"${desemp===n.v?' selected':''}>${n.l}</option>`).join('')}
+      </select>
+      ${pill}
+    </div>`;
+
+  row.querySelector('input').addEventListener('change', function(){
+    prog['chk_'+t.id] = this.checked;
+    row.classList.toggle('done', this.checked);
+    updateRing(si);
+    updateSidebarProg(si);
+    scheduleSave();
+    if(this.checked) checkSemanaCompleta(si);
+    updateDashLive();
+  });
+
+  row.querySelector('select').addEventListener('change', function(){
+    prog['des_'+t.id] = this.value;
+    const nota = row.querySelector('.nota-pill');
+    if(nota) nota.remove();
+    if(this.value){
+      const p = document.createElement('span');
+      p.className = 'nota-pill np-'+this.value;
+      p.textContent = NOTAS.find(n=>n.v===this.value).l.split(' ')[0];
+      this.after(p);
+    }
+    scheduleSave();
+    updateDashLive();
+  });
+
+  return row;
+}
+
+function toggleSem(si){
+  const head = document.getElementById('sh_'+si);
+  const body = document.getElementById('sb_'+si);
+  if(!body || !head) return;
+  const open = body.classList.contains('open');
+  body.classList.toggle('open', !open);
+  head.classList.toggle('open', !open);
+}
+
+function updateRing(si){
+  const sem = DATA[si];
+  const done = sem.tarefas.filter(t=>prog['chk_'+t.id]).length;
+  const pct = Math.round(done/sem.tarefas.length*100);
+  const fill = document.getElementById('ring_'+si);
+  const txt = document.getElementById('ring_txt_'+si);
+  const circ = 2*Math.PI*16;
+  if(fill) fill.style.strokeDashoffset = ((1-pct/100)*circ).toFixed(1);
+  if(txt) txt.textContent = pct+'%';
+}
+
+function updateSidebarProg(si){
+  const sem = DATA[si];
+  const done = sem.tarefas.filter(t=>prog['chk_'+t.id]).length;
+  const pct = Math.round(done/sem.tarefas.length*100);
+  const pb = document.getElementById('spb_'+si);
+  if(pb) pb.querySelector('.sidebar-progress-fill').style.width = pct+'%';
+}
+
+var _charts = {};
+
+function destroyChart(id){
+  if(_charts[id]){ _charts[id].destroy(); delete _charts[id]; }
+}
+
+function updateDashLive(){
+  var pg = document.getElementById('page-dashboard');
+  if(!pg || !pg.classList.contains('active')) return;
+  buildDash();
+}
+
+function buildDash(){
+  var allT = DATA.flatMap(function(s){ return s.tarefas; });
+  var tot = allT.length;
+  var feito = allT.filter(function(t){ return prog['chk_'+t.id]; }).length;
+  var aval  = allT.filter(function(t){ return prog['chk_'+t.id] && prog['des_'+t.id]; });
+  var pts   = {otimo:4,bom:3,regular:2,ruim:1};
+  var soma  = aval.reduce(function(a,t){ return a+(pts[prog['des_'+t.id]]||0); },0);
+  var media = aval.length ? soma/aval.length : 0;
+  var mediaArr = ['—','Abaixo','Regular','Bom','Ótimo'];
+  var mediaN = mediaArr[Math.round(media)] || media.toFixed(1);
+  var semsIniciadas = DATA.filter(function(s){ return s.tarefas.some(function(t){ return prog['chk_'+t.id]; }); }).length;
+  var semsConcluidas = DATA.filter(function(s){ return s.tarefas.every(function(t){ return prog['chk_'+t.id]; }); }).length;
+  
+  var dist = {otimo:0,bom:0,regular:0,ruim:0};
+  aval.forEach(function(t){ dist[prog['des_'+t.id]]++; });
+  var pctGeral = Math.round(feito/tot*100);
+
+  var porTipo = {};
+  allT.forEach(function(t){
+    if(!porTipo[t.tipo]) porTipo[t.tipo] = {tot:0,feito:0};
+    porTipo[t.tipo].tot++;
+    if(prog['chk_'+t.id]) porTipo[t.tipo].feito++;
+  });
+
+  ['chartDonut','chartBarSem','chartDesempenho','chartTipo'].forEach(destroyChart);
+
+  var h = document.getElementById('dash-content');
+  if(!h) return;
+  h.innerHTML =
+    '<div class="dash-grid" id="dash-metrics-grid"></div>' +
+    '<div class="dash-two-col">' +
+      '<div class="chart-card">' +
+        '<h3><i class="ti ti-chart-donut" aria-hidden="true"></i> Conclusão geral</h3>' +
+        '<div class="chart-wrap" style="height:220px"><canvas id="chartDonut"></canvas></div>' +
+        '<div class="chart-legend" id="legendDonut"></div>' +
+      '</div>' +
+      '<div class="chart-card">' +
+        '<h3><i class="ti ti-chart-pie" aria-hidden="true"></i> Desempenho registrado</h3>' +
+        '<div class="chart-wrap" style="height:220px"><canvas id="chartDesempenho"></canvas></div>' +
+        '<div class="chart-legend" id="legendDes"></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="chart-card">' +
+      '<h3><i class="ti ti-calendar-stats" aria-hidden="true"></i> Progresso por semana (%)</h3>' +
+      '<div class="chart-wrap" style="height:' + (DATA.length*48+60) + 'px"><canvas id="chartBarSem"></canvas></div>' +
+    '</div>' +
+    '<div class="chart-card">' +
+      '<h3><i class="ti ti-list-check" aria-hidden="true"></i> Conclusão por tipo de tarefa</h3>' +
+      '<div class="chart-wrap" style="height:' + (Object.keys(porTipo).length*44+60) + 'px"><canvas id="chartTipo"></canvas></div>' +
+    '</div>' +
+    '<div class="prog-card"><h3><i class="ti ti-target" aria-hidden="true"></i> Cobertura por CT — eixos de incidência FGV</h3><div id="ct-list"></div></div>' +
+    '<div class="prog-card"><h3><i class="ti ti-tools" aria-hidden="true"></i> Ações</h3>' +
+      '<div class="btn-row">' +
+        '<button class="btn btn-primary" onclick="exportarRelatorio()"><i class="ti ti-download" aria-hidden="true"></i> Exportar relatório .txt</button>' +
+        '<button class="btn btn-outline" onclick="exportarCSV()"><i class="ti ti-table-export" aria-hidden="true"></i> Exportar .csv</button>' +
+        '<button class="btn btn-danger" onclick="confirmarReset()"><i class="ti ti-trash" aria-hidden="true"></i> Resetar progresso</button>' +
+      '</div>' +
+    '</div>';
+
+  var metricas = [
+    {icon:'ti-checklist',  cls:'mi-blue',   lbl:'Tarefas concluídas', val:feito+'/'+tot,      sub:pctGeral+'% do total'},
+    {icon:'ti-star',       cls:'mi-purple',  lbl:'Desempenho médio',   val:mediaN,             sub:media.toFixed(1)+' / 4.0'},
+    {icon:'ti-chart-bar',  cls:'mi-green',   lbl:'Semanas concluídas', val:semsConcluidas+'/8',sub:semsIniciadas+' iniciadas'},
+    {icon:'ti-pencil',     cls:'mi-amber',   lbl:'Avaliadas',          val:aval.length,       sub:'de '+feito+' concluídas'},
+  ];
+  var mg = document.getElementById('dash-metrics-grid');
+  metricas.forEach(function(m){
+    var d = document.createElement('div');
+    d.className = 'metric-card';
+    d.innerHTML = '<div class="metric-icon '+m.cls+'"><i class="ti '+m.icon+'" aria-hidden="true"></i></div>' +
+      '<div class="metric-label">'+m.lbl+'</div>' +
+      '<div class="metric-val">'+m.val+'</div>' +
+      '<div class="metric-sub">'+m.sub+'</div>';
+    mg.appendChild(d);
+  });
+
+  var isDark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+  var textColor = isDark ? '#CBD5E1' : '#64748B';
+
+  _charts['chartDonut'] = new Chart(document.getElementById('chartDonut'), {
+    type:'doughnut',
+    data:{
+      labels:['Concluídas','Pendentes'],
+      datasets:[{
+        data:[feito, tot-feito],
+        backgroundColor:['#1E7E34','#E2E8F0'],
+        borderWidth:0,
+        hoverOffset:4
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'72%',
+      plugins:{ legend:{display:false} }
+    }
+  });
+  document.getElementById('legendDonut').innerHTML =
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:#1E7E34"></span>Concluídas: '+feito+'</span>' +
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:#E2E8F0"></span>Pendentes: '+(tot-feito)+'</span>';
+
+  var desLabels = ['Ótimo','Bom','Regular','Abaixo','Sem avaliação'];
+  var desData   = [dist.otimo, dist.bom, dist.regular, dist.ruim, feito - aval.length];
+  var desCores  = ['#1E7E34','#2E5FA3','#D97706','#C0392B','#94A3B8'];
+  _charts['chartDesempenho'] = new Chart(document.getElementById('chartDesempenho'), {
+    type:'doughnut',
+    data:{
+      labels:desLabels,
+      datasets:[{data:desData, backgroundColor:desCores, borderWidth:0, hoverOffset:4}]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'70%',
+      plugins:{ legend:{display:false} }
+    }
+  });
+  var legDes = document.getElementById('legendDes');
+  desLabels.forEach(function(l,i){
+    if(desData[i]===0 && l !== 'Sem avaliação') return;
+    var sp = document.createElement('span'); sp.className='chart-legend-item';
+    sp.innerHTML='<span class="chart-legend-dot" style="background:'+desCores[i]+'"></span>'+l+': '+desData[i];
+    legDes.appendChild(sp);
+  });
+
+  var semLabels = DATA.map(function(_,i){ return 'Sem.'+(i+1); });
+  var semData   = DATA.map(function(s){
+    var d = s.tarefas.filter(function(t){ return prog['chk_'+t.id]; }).length;
+    return Math.round(d/s.tarefas.length*100);
+  });
+  _charts['chartBarSem'] = new Chart(document.getElementById('chartBarSem'), {
+    type:'bar',
+    data:{
+      labels:semLabels,
+      datasets:[{
+        label:'% concluído',
+        data:semData,
+        backgroundColor:SEMANA_COLORS,
+        borderRadius:4,
+        borderSkipped:false
+      }]
+    },
+    options:{
+      indexAxis:'y',
+      responsive:true, maintainAspectRatio:false,
+      scales:{
+        x:{min:0,max:100,ticks:{callback:function(v){ return v+'%'; },color:textColor},grid:{color:isDark?'rgba(255,255,255,.07)':'rgba(0,0,0,.06)'}},
+        y:{ticks:{color:textColor},grid:{display:false}}
+      },
+      plugins:{ legend:{display:false} }
+    }
+  });
+
+  var tipoLabels = Object.keys(porTipo);
+  var tipoFeito  = tipoLabels.map(function(k){ return porTipo[k].feito; });
+  var tipoTot    = tipoLabels.map(function(k){ return porTipo[k].tot - porTipo[k].feito; });
+  var tipoCores  = {'REV':'#1E7E34','ESTUDO':'#2E5FA3','REV FINAL':'#145A32','REV VÉSPERA':'#145A32',
+                    'QUESTÃO TREINO':'#7C3AED','PEÇA TÉCNICA APOSTADA':'#D97706',
+                    'SIMULADO LIVRE':'#0369A1','SIMULADO GERAL':'#DC2626','MINI REVISÃO':'#92400E'};
+  var tipoBarCores = tipoLabels.map(function(k){ return tipoCores[k]||'#64748B'; });
+  _charts['chartTipo'] = new Chart(document.getElementById('chartTipo'), {
+    type:'bar',
+    data:{
+      labels:tipoLabels.map(function(l){ return l.length>18?l.substring(0,17)+'…':l; }),
+      datasets:[
+        {label:'Concluídas', data:tipoFeito, backgroundColor:tipoBarCores, borderRadius:4, borderSkipped:false},
+        {label:'Pendentes',  data:tipoTot,   backgroundColor:'#E2E8F0',    borderRadius:4, borderSkipped:false}
+      ]
+    },
+    options:{
+      indexAxis:'y',
+      responsive:true, maintainAspectRatio:false,
+      scales:{
+        x:{stacked:true, ticks:{color:textColor, stepSize:1}, grid:{color:isDark?'rgba(255,255,255,.07)':'rgba(0,0,0,.06)'}},
+        y:{stacked:true, ticks:{color:textColor, font:{size:11}}, grid:{display:false}}
+      },
+      plugins:{ legend:{display:false} }
+    }
+  });
+
+  var ctList = document.getElementById('ct-list');
+  Object.entries(CT_MAP).forEach(function(entry){
+    var ct = entry[0], arr = entry[1], nome = arr[0], ids = arr[1];
+    var idList = ids.split(',');
+    
+    // Contagem baseada na busca dinâmica do ID em vez do mapeamento estático e truncado do objeto nativo
+    var d = 0;
+    allT.forEach(function(task) {
+       idList.forEach(function(idTarget) {
+          var normalizedTarget = idTarget.replace('_', '').toLowerCase();
+          var normalizedTaskId = task.id.replace('_', '').toLowerCase();
+          if(normalizedTaskId === normalizedTarget && prog['chk_'+task.id]) {
+             d++;
+          }
+       });
+    });
+
+    var p = Math.round(d/idList.length*100);
+    if(p > 100) p = 100;
+    var cor = p===100?'#065F46':p>50?'#1D4ED8':'#991B1B';
+    var row = document.createElement('div');
+    row.className='ct-row';
+    row.innerHTML=
+      '<div class="ct-lbl">'+ct+'</div>'+
+      '<div class="ct-info">'+
+        '<div class="ct-name">'+nome+'</div>'+
+        '<div class="ct-bar-bg"><div class="ct-bar-fill" style="width:'+p+'%;background:'+cor+'"></div></div>'+
+      '</div>'+
+      '<div class="ct-pct" style="color:'+cor+'">'+p+'%</div>';
+    ctList.appendChild(row);
+  });
+}
+
+function exportarRelatorio(){
+  const allT = DATA.flatMap(s=>s.tarefas);
+  const feito = allT.filter(t=>prog['chk_'+t.id]).length;
+  const aval = allT.filter(t=>prog['chk_'+t.id] && prog['des_'+t.id]);
+  const pts = {otimo:4,bom:3,regular:2,ruim:1};
+  const media = aval.length?(aval.reduce((a,t)=>a+pts[prog['des_'+t.id]],0)/aval.length).toFixed(1):'N/A';
+  let txt = `RELATÓRIO DE PROGRESSO — TCE-SC 2026 · DISCURSIVA\n${'═'.repeat(54)}\nGerado em: ${new Date().toLocaleString('pt-BR')}\n\nTAREFAS CONCLUÍDAS: ${feito}/${allT.length} (${Math.round(feito/allT.length*100)}%)\nDESEMPENHO MÉDIO: ${media}/4.0\n\n`;
+  DATA.forEach((s,i)=>{
+    const done = s.tarefas.filter(t=>prog['chk_'+t.id]).length;
+    const nota = prog['obs_'+i]?`\n   Obs: ${prog['obs_'+i]}`:'';
+    txt += `${'─'.repeat(54)}\nSEMANA ${i+1} — ${s.titulo}\nProgresso: ${done}/${s.tarefas.length}${nota}\n\n`;
+    s.tarefas.forEach(t=>{
+      const c = prog['chk_'+t.id]?'[X]':'[ ]';
+      const d = prog['des_'+t.id]?` | ${prog['des_'+t.id].toUpperCase()}`:'';
+      txt += `  ${c} ${t.n} | ${t.tipo.padEnd(22)} | ${t.top.substring(0,60)}${d}\n`;
+    });
+    txt += '\n';
+  });
+  dl(txt, `TCE-SC-Progresso-${new Date().toISOString().split('T')[0]}.txt`, 'text/plain');
+  toast('Relatório exportado ✓');
+}
+
+function exportarCSV(){
+  let csv = 'Semana,Numero,Tipo,Materia,Topico Edital,Detalhamento,Concluido,Desempenho\n';
+  DATA.forEach((s,i)=>{
+    s.tarefas.forEach(t=>{
+      const feito = prog['chk_'+t.id]?'Sim':'Não';
+      const des = prog['des_'+t.id]||'';
+      const esc = v => '"'+String(v).replace(/"/g,'""')+'"';
+      csv += [i+1, t.n, t.tipo, t.mat, t.top, t.det, feito, des].map(esc).join(',')+'\n';
+    });
+  });
+  dl(csv, `TCE-SC-Cronograma-${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+  toast('CSV exportado ✓');
+}
+
+function dl(content, filename, type){
+  const blob = new Blob([content], {type});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+}
+
+function confirmarReset(){
+  if(confirm('Resetar TODO o progresso保存? Esta ação não pode ser desfeita.')){
+    prog = {};
+    localStorage.removeItem(STORAGE_KEY);
+    buildChecklist();
+    if(document.getElementById('page-dashboard').classList.contains('active')) buildDash();
+    buildSidebar();
+    toast('Progresso resetado');
+  }
+}
+
+function toast(msg){
+  const el = document.getElementById('toast');
+  if(!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2800);
+}
+
+const EMAIL_DEST = 'sandymilene@gmail.com';
+const MOTIVACAO = [
+  'Você está construindo um resultado sólido, tijolo por tijolo. O TCE-SC é seu. Continue.',
+  'Disciplina bate talento quando o talento não tem disciplina. Você tem as duas coisas.',
+  'Cada semana concluída é uma distância que seus concorrentes não percorreram. Mantenha o ritmo.',
+  'O Auditor que você vai ser no dia 9 de agosto está sendo forjado agora, nesta rotina.',
+  'Foco no processo. Os pontos virão como consequência. Você está no caminho certo.',
+  'A aprovação não é um evento — é o resultado de dezenas de decisões como esta. Parabéns.',
+  'Mais uma semana encerrada. Menos um ciclo para o fim. Você está mais perto do que imagina.',
+  'A véspera chegou. Tudo que você construiu nas semanas anteriores está pronto para ser entregue. Confie no processo.',
+];
+
+function checkSemanaCompleta(si){
+  const sem = DATA[si];
+  const done = sem.tarefas.filter(t=>prog['chk_'+t.id]).length;
+  const total = sem.tarefas.length;
+  if(done < total) return;
+  if(prog['email_sent_s'+si]) return;
+  prog['email_sent_s'+si] = true;
+  scheduleSave();
+  enviarEmailSemana(si, sem);
+}
+
+function enviarEmailSemana(si, sem){
+  var aval = sem.tarefas.filter(function(t){ return prog['chk_'+t.id] && prog['des_'+t.id]; });
+  var pts = {otimo:4,bom:3,regular:2,ruim:1};
+  var dist = {otimo:0,bom:0,regular:0,ruim:0};
+  aval.forEach(function(t){ dist[prog['des_'+t.id]]++; });
+  var soma = aval.reduce(function(a,t){ return a+(pts[prog['des_'+t.id]]||0); },0);
+  var media = aval.length ? (soma/aval.length) : 0;
+  var mediaArr = ['--','Abaixo','Regular','Bom','Otimo'];
+  var mediaN = mediaArr[Math.round(media)] || media.toFixed(1);
+  var motivacao = MOTIVACAO[si] || MOTIVACAO[0];
+  var obs = prog['obs_'+si] || '(sem observacoes)';
+  var pctDes = aval.length ? Math.round(aval.length/sem.tarefas.length*100) : 0;
+  var semanasTotais = DATA.filter(function(_,idx){
+    return DATA[idx].tarefas.every(function(t){ return prog['chk_'+t.id]; });
+  }).length;
+
+  var nl = '%0D%0A';
+  var sep = '================================';
+
+  var linhasDist = [];
+  if(dist.otimo)    linhasDist.push('  Otimo (90-100%): '  + dist.otimo   + ' tarefa(s)');
+  if(dist.bom)      linhasDist.push('  Bom (70-89%): '     + dist.bom     + ' tarefa(s)');
+  if(dist.regular)  linhasDist.push('  Regular (50-69%): ' + dist.regular + ' tarefa(s)');
+  if(dist.ruim)     linhasDist.push('  Abaixo (<50%): '    + dist.ruim    + ' tarefa(s)');
+  var distBloco = linhasDist.length
+    ? 'Distribuicao:' + nl + linhasDist.join(nl)
+    : 'Nenhuma tarefa foi avaliada ainda.';
+
+  var subject = encodeURIComponent(
+    'TCE-SC 2026 | Semana ' + (si+1) + ' concluida - Desempenho: ' + mediaN
+  );
+
+  var bodyLines = [
+    sep,
+    'TCE-SC 2026 | CRONOGRAMA DISCURSIVA',
+    'Auditor Fiscal de Controle Externo - Area Direito',
+    sep,
+    '',
+    'SEMANA ' + (si+1) + ' CONCLUIDA - ' + sem.titulo,
+    '',
+    'RELATORIO DE DESEMPENHO',
+    'Tarefas concluídas: ' + sem.tarefas.length + '/' + sem.tarefas.length + ' (100%)',
+    'Tarefas avaliadas: ' + aval.length + ' de ' + sem.tarefas.length + ' (' + pctDes + '%)',
+    'Desempenho médio: ' + mediaN + ' (' + media.toFixed(1) + '/4.0)',
+    '',
+    distBloco,
+    '',
+    'Suas observacoes da semana:',
+    obs,
+    '',
+    'PROGRESSO GERAL',
+    'Semanas 100% concluidas: ' + semanasTotais + ' de 8',
+    'Prova: 9 de agosto de 2026',
+    '',
+    sep,
+    'MENSAGEM DE MOTIVACAO',
+    sep,
+    '',
+    motivacao,
+    '',
+    sep,
+    'Enviado automaticamente pelo Cronograma TCE-SC 2026.',
+  ];
+
+  var body = bodyLines.join(nl);
+  window.location.href = 'mailto:' + EMAIL_DEST + '?subject=' + subject + '&body=' + body;
+
+  setTimeout(function(){
+    toast('Semana ' + (si+1) + ' completa! E-mail preparado para ' + EMAIL_DEST);
+  }, 500);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+async function init(){
+  await loadProg();
+  buildChecklist();
+  buildSidebar();
+  const ls = document.getElementById('loading-screen');
+  if(ls) ls.style.display = 'none';
+}
+
+init();
+</script>
+</body>
+</html>
